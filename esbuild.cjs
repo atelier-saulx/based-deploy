@@ -4,7 +4,7 @@ build({
     entryPoints: ['src/index.ts'],
     outfile: "dist/index.cjs",
     bundle: true,
-    minify: true,
+    minify: false,
     platform: 'node',
     target: 'node18',
     format: "cjs",

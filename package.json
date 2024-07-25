@@ -1,9 +1,10 @@
 {
   "name": "based-delpoy",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "node esbuild.js",
+    "build": "node esbuild.cjs",
     "prepare": "npm run build"
   },
   "prettier": "@saulx/prettier-config",

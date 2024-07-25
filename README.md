@@ -46,7 +46,7 @@ A Success/Error message containing the Based CLI output.
 * Your dashboard will update with your new service account created. Now you can use this action passing the information to the workflow.
 
 ```yaml
-uses: atelier-saulx/basedio-deploy@v1.0.3
+uses: atelier-saulx/basedio-deploy@v1.0.4
 with:
   userID: ${{ secrets.BASED_USER_ID }}
   apiKey: ${{ secrets.BASED_API_KEY }}

@@ -1,6 +1,6 @@
 {
   "name": "based-delpoy",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "main": "dist/index.cjs",
   "scripts": {
     "build": "node esbuild.cjs",

@@ -36738,12 +36738,14 @@ async function run() {
         "You need to pass the userID and the apiKey as input to the function to deploy your files."
       );
     }
+    core.info("\u2705 UserID and APIKey");
     const basedJsonPath = (0, import_path2.join)(process.cwd(), "based.json");
     if (!(0, import_fs2.existsSync)(basedJsonPath)) {
       throw new Error(
         'Was not possible to find the "based.json" file in the branch. Add the file and try again.'
       );
     }
+    core.info('\u2705 Loaded "based.json"');
     const basedJson = JSON.parse((0, import_fs2.readFileSync)(basedJsonPath, "utf-8"));
     const { org, project, env } = basedJson;
     if (!org || !project || !env) {
@@ -36751,18 +36753,22 @@ async function run() {
         'Was not possible to read the "based.json" file in the branch.'
       );
     }
+    core.info('\u2705 Parsed "based.json"');
     const client = new BasedClient({
       org: "saulx",
       project: "based-cloud",
       env: "platform",
       name: "@based/admin-hub"
     });
+    core.info("\u2705 Based Client created");
     await client.setAuthState({
       token: apiKey,
       type: "serviceAccount",
       userId: userID
     });
+    core.info("\u2705 Based AuthState set");
     try {
+      core.info("\u{1F558} Trying to create a new environment");
       await client.call("create-env", {
         org,
         project,
@@ -36770,17 +36776,17 @@ async function run() {
         config: size,
         region
       });
-      core.info("Waiting for the creation of the environment...");
+      core.info("\u2705 Waiting for the creation of the environment...");
       await wait_default(3e4);
-      core.info("Environment created successfully.");
+      core.info("\u2705 Environment created successfully.");
     } catch (e2) {
-      core.info(`Error creating the environment: ${e2.message}`);
+      core.info(`\u{1F9E8} Error creating the environment: ${e2.message}`);
     }
-    core.info("Starting the Deploy using the Based CLI...");
+    core.info("\u{1F558} Starting the Deploy using the Based CLI...");
     const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${apiKey}"`);
-    core.info(`stdout: ${stdout}`);
-    core.error(`stderr: ${stderr}`);
-    core.setOutput("response", "Success! Enjoy your fastest deploy ever!");
+    core.info(`\u{1F4AC} stdout: ${stdout}`);
+    core.error(`\u{1F4AC} stderr: ${stderr}`);
+    core.setOutput("response", "\u{1F389} Success! Enjoy your fastest deploy ever!");
   } catch (error2) {
     core.setFailed(error2.message);
   }

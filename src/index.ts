@@ -25,12 +25,16 @@ async function run() {
       )
     }
 
+    core.info('✅ UserID and APIKey')
+
     const basedJsonPath = join(process.cwd(), 'based.json')
     if (!existsSync(basedJsonPath)) {
       throw new Error(
         'Was not possible to find the "based.json" file in the branch. Add the file and try again.',
       )
     }
+
+    core.info('✅ Loaded "based.json"')
 
     const basedJson = JSON.parse(readFileSync(basedJsonPath, 'utf-8'))
     const { org, project, env } = basedJson
@@ -43,6 +47,8 @@ async function run() {
       )
     }
 
+    core.info('✅ Parsed "based.json"')
+
     const client = new BasedClient({
       org: 'saulx',
       project: 'based-cloud',
@@ -50,13 +56,19 @@ async function run() {
       name: '@based/admin-hub',
     })
 
+    core.info('✅ Based Client created')
+
     await client.setAuthState({
       token: apiKey,
       type: 'serviceAccount',
       userId: userID,
     })
 
+    core.info('✅ Based AuthState set')
+
     try {
+      core.info('🕘 Trying to create a new environment')
+
       await client.call('create-env', {
         org,
         project,
@@ -65,20 +77,20 @@ async function run() {
         region,
       })
 
-      core.info('Waiting for the creation of the environment...')
+      core.info('✅ Waiting for the creation of the environment...')
       await wait(30000)
-      core.info('Environment created successfully.')
+      core.info('✅ Environment created successfully.')
     } catch (e) {
-      core.info(`Error creating the environment: ${e.message}`)
+      core.info(`🧨 Error creating the environment: ${e.message}`)
     }
 
-    core.info('Starting the Deploy using the Based CLI...')
+    core.info('🕘 Starting the Deploy using the Based CLI...')
     const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${apiKey}"`)
 
-    core.info(`stdout: ${stdout}`)
-    core.error(`stderr: ${stderr}`)
+    core.info(`💬 stdout: ${stdout}`)
+    core.error(`💬 stderr: ${stderr}`)
 
-    core.setOutput('response', 'Success! Enjoy your fastest deploy ever!')
+    core.setOutput('response', '🎉 Success! Enjoy your fastest deploy ever!')
   } catch (error) {
     core.setFailed(error.message)
   }

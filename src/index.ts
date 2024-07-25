@@ -55,17 +55,24 @@ async function run() {
       userId: userID,
     })
 
-    // does it exist?
-    await client.call('create-env', {
+    const isEvnExist = client.query('env', {
       org,
       project,
-      env: branchName,
-      config: size,
-      region,
-    })
+      env
+    }).get()
 
-    core.info('Waiting for the creation of the environment...')
-    await new Promise((resolve) => setTimeout(resolve, 30000))
+    if (!isEvnExist) {
+      await client.call('create-env', {
+        org,
+        project,
+        env: branchName,
+        config: size,
+        region,
+      })
+
+      core.info('Waiting for the creation of the environment...')
+      await new Promise((resolve) => setTimeout(resolve, 30000))
+    }
 
     core.info('Running npx @based/cli deploy')
     const { stdout, stderr } = await execPromise('npx @based/cli deploy')

@@ -5,6 +5,7 @@ import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 import { exec } from 'child_process'
 import { promisify } from 'util'
+import { wait } from '@saulx/utils'
 
 const execPromise = promisify(exec)
 
@@ -55,13 +56,7 @@ async function run() {
       userId: userID,
     })
 
-    const isEvnExist = client.query('env', {
-      org,
-      project,
-      env
-    }).get()
-
-    if (!isEvnExist) {
+    try {
       await client.call('create-env', {
         org,
         project,
@@ -71,11 +66,14 @@ async function run() {
       })
 
       core.info('Waiting for the creation of the environment...')
-      await new Promise((resolve) => setTimeout(resolve, 30000))
+      await wait(30000)
+    } catch (e) {
+      core.info(e.message)
     }
 
     core.info('Running npx @based/cli deploy')
-    const { stdout, stderr } = await execPromise('npx @based/cli deploy')
+    const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${apiKey}"`)
+
     core.info(`stdout: ${stdout}`)
     core.error(`stderr: ${stderr}`)
 

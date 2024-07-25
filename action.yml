@@ -1,0 +1,24 @@
+name: 'Based.io Deploy'
+description: 'Easily deploy your branch on Based.io'
+inputs:
+  userID:
+    description: 'The user ID created on the Based.io dashboard.'
+    required: true
+  apiKey:
+    description: 'The secret token for authentication with the Based.io API.'
+    required: true
+  size:
+    description: "The size of the environment, can be 'small' or 'large'. The default is 'small'."
+    required: false
+  region:
+    description: "In which region would you like to spawn the environment? You can choose between 'eu-central-1', 'sa-east-1', 'us-east-1', 'us-west-1', 'ap-southeast-2'. The default is 'eu-central-1'."
+    required: false
+outputs:
+  response:
+    description: 'The response from the Based.io API'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+branding:
+  icon: 'upload-cloud'
+  color: 'purple'

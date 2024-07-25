@@ -7,5 +7,5 @@ build({
     minify: true,
     platform: 'node',
     target: 'node18',
-    format: "cjs",
+    format: "esm",
 })

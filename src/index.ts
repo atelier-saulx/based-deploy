@@ -67,17 +67,18 @@ async function run() {
 
       core.info('Waiting for the creation of the environment...')
       await wait(30000)
+      core.info('Environment created successfully.')
     } catch (e) {
-      core.info(e.message)
+      core.info(`Error creating the environment: ${e.message}`)
     }
 
-    core.info('Running npx @based/cli deploy')
+    core.info('Starting the Deploy using the Based CLI...')
     const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${apiKey}"`)
 
     core.info(`stdout: ${stdout}`)
     core.error(`stderr: ${stderr}`)
 
-    core.setOutput('response', 'Success!')
+    core.setOutput('response', 'Success! Enjoy your fastest deploy ever!')
   } catch (error) {
     core.setFailed(error.message)
   }

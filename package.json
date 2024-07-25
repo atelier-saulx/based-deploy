@@ -1,8 +1,7 @@
 {
   "name": "based-delpoy",
-  "version": "1.0.7",
-  "type": "module",
-  "main": "dist/index.js",
+  "version": "1.0.8",
+  "main": "dist/index.cjs",
   "scripts": {
     "build": "node esbuild.cjs",
     "prepare": "npm run build"

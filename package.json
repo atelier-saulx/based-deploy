@@ -1,9 +1,10 @@
 {
   "name": "based-delpoy",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "main": "dist/index.cjs",
   "scripts": {
     "build": "node esbuild.cjs",
+    "demo": "ts-node --esm demo/demo.mts",
     "prepare": "npm run build"
   },
   "prettier": "@saulx/prettier-config",
@@ -20,6 +21,7 @@
     "@types/node": "^20.14.12",
     "esbuild": "^0.23.0",
     "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
   }
 }

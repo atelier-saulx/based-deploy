@@ -57,13 +57,11 @@ async function run() {
     })
 
     core.info('✅ Based Client created')
-    core.info(`${userID}`)
-    core.info(`${apiKey}`)
 
     await client.setAuthState({
-      token: String(apiKey),
+      token: apiKey,
       type: 'serviceAccount',
-      userId: String(userID),
+      userId: userID,
     })
 
     core.info('✅ Based AuthState set')

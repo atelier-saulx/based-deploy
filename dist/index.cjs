@@ -36761,8 +36761,8 @@ async function run() {
       name: "@based/admin-hub"
     });
     core.info("\u2705 Based Client created");
-    core.info(`${userID}`);
-    core.info(`${apiKey}`);
+    core.info(`asdadasdsadasdsada${userID}asdasdsadasdasda`);
+    core.info(`aaaassdsdadasd${apiKey}asdsadasda`);
     await client.setAuthState({
       token: String(apiKey),
       type: "serviceAccount",

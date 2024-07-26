@@ -36734,14 +36734,14 @@ async function run() {
     const branchName = github.context.ref.replace("refs/heads/", "");
     if (!userID || !apiKey) {
       throw new Error(
-        "You need to pass the userID and the apiKey as input to the function to deploy your files."
+        "\u{1F9E8} You need to pass the userID and the apiKey as input to the function to deploy your files."
       );
     }
     core.info("\u2705 UserID and APIKey");
     const basedJsonPath = (0, import_path2.join)(process.cwd(), "based.json");
     if (!(0, import_fs2.existsSync)(basedJsonPath)) {
       throw new Error(
-        'Was not possible to find the "based.json" file in the branch. Add the file and try again.'
+        '\u{1F9E8} Was not possible to find the "based.json" file in the branch. Add the file and try again.'
       );
     }
     core.info('\u2705 Loaded "based.json"');
@@ -36749,7 +36749,7 @@ async function run() {
     const { org, project, env } = basedJson;
     if (!org || !project || !env) {
       throw new Error(
-        'Was not possible to read the "based.json" file in the branch.'
+        '\u{1F9E8} Was not possible to read the "based.json" file in the branch.'
       );
     }
     core.info('\u2705 Parsed "based.json"');
@@ -36778,16 +36778,18 @@ async function run() {
       core.info("\u2705 Waiting for the creation of the environment...");
       await wait_default(3e4);
       core.info("\u2705 Environment created successfully.");
-    } catch (e2) {
-      core.info(`\u{1F9E8} Error creating the environment: ${e2.message}`);
+    } catch (error2) {
+      throw new Error(
+        `\u{1F9E8} Error creating the environment: ${error2.message}`
+      );
     }
-    core.info("\u{1F558} Starting the Deploy using the Based CLI...");
+    core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");
     const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${apiKey}"`);
     core.info(`\u{1F4AC} stdout: ${stdout}`);
     core.error(`\u{1F4AC} stderr: ${stderr}`);
     core.setOutput("response", "\u{1F389} Success! Enjoy your fastest deploy ever!");
   } catch (error2) {
-    core.setFailed(error2.message);
+    core.setFailed(`\u{1F9E8} Error deploying your repo: ${error2.message}`);
   }
 }
 run();

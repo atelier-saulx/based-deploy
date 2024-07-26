@@ -21,7 +21,7 @@ async function run() {
 
     if (!userID || !apiKey) {
       throw new Error(
-        'You need to pass the userID and the apiKey as input to the function to deploy your files.',
+        '🧨 You need to pass the userID and the apiKey as input to the function to deploy your files.',
       )
     }
 
@@ -30,7 +30,7 @@ async function run() {
     const basedJsonPath = join(process.cwd(), 'based.json')
     if (!existsSync(basedJsonPath)) {
       throw new Error(
-        'Was not possible to find the "based.json" file in the branch. Add the file and try again.',
+        '🧨 Was not possible to find the "based.json" file in the branch. Add the file and try again.',
       )
     }
 
@@ -43,7 +43,7 @@ async function run() {
 
     if (!org || !project || !env) {
       throw new Error(
-        'Was not possible to read the "based.json" file in the branch.',
+        '🧨 Was not possible to read the "based.json" file in the branch.',
       )
     }
 
@@ -80,11 +80,13 @@ async function run() {
       core.info('✅ Waiting for the creation of the environment...')
       await wait(30000)
       core.info('✅ Environment created successfully.')
-    } catch (e) {
-      core.info(`🧨 Error creating the environment: ${e.message}`)
+    } catch (error) {
+      throw new Error(
+        `🧨 Error creating the environment: ${error.message}`,
+      )
     }
 
-    core.info('🕘 Starting the Deploy using the Based CLI...')
+    core.info('☁️ Starting the Deploy using the Based CLI...')
     const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${apiKey}"`)
 
     core.info(`💬 stdout: ${stdout}`)
@@ -92,7 +94,7 @@ async function run() {
 
     core.setOutput('response', '🎉 Success! Enjoy your fastest deploy ever!')
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(`🧨 Error deploying your repo: ${error.message}`)
   }
 }
 

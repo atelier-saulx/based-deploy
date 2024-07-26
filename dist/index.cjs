@@ -34989,11 +34989,10 @@ var parseArrayBuffer = async (d2) => {
     if (d2 instanceof Buffer) {
       return new Uint8Array(d2);
     }
-  } else {
-    if (d2 instanceof Blob) {
-      const buffer = await d2.arrayBuffer();
-      return new Uint8Array(buffer);
-    }
+  }
+  if (d2 instanceof Blob) {
+    const buffer = await d2.arrayBuffer();
+    return new Uint8Array(buffer);
   }
   throw new Error("432");
 };
@@ -36761,12 +36760,10 @@ async function run() {
       name: "@based/admin-hub"
     });
     core.info("\u2705 Based Client created");
-    core.info(`asdadasdsadasdsada${userID}asdasdsadasdasda`);
-    core.info(`aaaassdsdadasd${apiKey}asdsadasda`);
     await client.setAuthState({
-      token: String(apiKey),
+      token: apiKey,
       type: "serviceAccount",
-      userId: String(userID)
+      userId: userID
     });
     core.info("\u2705 Based AuthState set");
     try {

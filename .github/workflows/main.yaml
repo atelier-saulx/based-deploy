@@ -1,32 +1,26 @@
 name: Deploy Branch in Based.io
-
 on:
-  pull_request:
-    types: [opened, synchronize]
-
+  push:
+    branches:
+      - "**"
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18.15.0'
-
+          node-version: 18.15.0
       - name: Install dependencies
         run: npm install
-
       - name: Build the action
         run: npm run build
-
       - name: Run the action
-        uses: atelier-saulx/based-deploy@v1.0.16
+        uses: atelier-saulx/based-deploy@v1.0.17
         with:
           userID: ${{ secrets.BASED_USER_ID }}
           apiKey: ${{ secrets.BASED_API_KEY }}
-          size: 'small'
-          region: 'eu-central-1'
+          size: small
+          region: eu-central-1

@@ -11,15 +11,15 @@ const execPromise = promisify(exec)
 
 async function run() {
   try {
-    const userID = core.getInput('userID')
-    const apiKey = core.getInput('apiKey')
+    const userId = core.getInput('userID')
+    const token = core.getInput('apiKey')
     const size = core.getInput('size') ?? 'small'
     const region = core.getInput('region') ?? 'eu-central-1'
     // const repository = github.context.repo.repo
     const branchName = github.context.ref.replace('refs/heads/', '')
     // const branchUrl = `https://github.com/${github.context.repo.owner}/${repository}/tree/${branchName}`
 
-    if (!userID || !apiKey) {
+    if (!userId || !token) {
       throw new Error(
         'You need to pass the userID and the apiKey as input to the function to deploy your files.',
       )
@@ -57,9 +57,9 @@ async function run() {
     core.info('✅ Based Client created')
 
     await client.setAuthState({
-      token: apiKey,
+      token,
       type: 'serviceAccount',
-      userId: userID,
+      userId,
     })
 
     core.info('✅ Based AuthState set')
@@ -87,7 +87,7 @@ async function run() {
     }
 
     core.info('☁️ Starting the Deploy using the Based CLI...')
-    const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key ${apiKey}`)
+    const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${token}"`)
 
     core.info(`💬 stdout: ${stdout}`)
     core.error(`💬 stderr: ${stderr}`)

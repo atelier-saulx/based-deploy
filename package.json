@@ -1,15 +1,17 @@
 {
   "name": "based-delpoy",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "main": "dist/index.cjs",
   "scripts": {
     "build": "node esbuild.cjs",
     "prepare": "npm run build",
     "demo": "node demo/demo.mjs",
     "publish": "node scripts/publish.mjs",
-    "release:patch": "npm version patch && npm run publish",
-    "release:minor": "npm version minor && npm run publish",
-    "release:major": "npm version major && npm run publish"
+    "release:patch": "npm run prepare && npm version patch && npm run publish && npm run commit && npm run tag",
+    "release:minor": "npm run prepare && npm version minor && npm run publish && npm run commit && npm run tag",
+    "release:major": "npm run prepare && npm version major && npm run publish && npm run commit && npm run tag",
+    "commit": "git add . && git commit -m 'Publishing new version'",
+    "tag": "PACKAGE_VERSION=$(sed -n '/\"version\"/s/[^0-9.]//gp' package.json | tr -d '\n') && git tag -a v$PACKAGE_VERSION -m 'Releasing version v$PACKAGE_VERSION' && git push --tags && git push"
   },
   "prettier": "@saulx/prettier-config",
   "dependencies": {

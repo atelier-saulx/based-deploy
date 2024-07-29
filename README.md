@@ -35,7 +35,7 @@ A Success/Error message containing the Based CLI output.
   
 <img src="https://raw.githubusercontent.com/atelier-saulx/based-deploy/main/steps/step2.png" width="800" />
 
-* Give a name to your service account and select a role to your project. You can choose between 'admin' and 'viewer' and then click on 'Create service account'.
+* Give a name to your service account and select a role to your project. You can choose between 'admin' and 'viewer' (in this case, you need to set 'admin'), check the option 'Organization admin', and then click on 'Create service account'.
 
 <img src="https://raw.githubusercontent.com/atelier-saulx/based-deploy/main/steps/step3.png" width="500" />
 

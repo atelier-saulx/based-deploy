@@ -4,8 +4,12 @@
   "main": "dist/index.cjs",
   "scripts": {
     "build": "node esbuild.cjs",
+    "prepare": "npm run build",
     "demo": "node demo/demo.mjs",
-    "prepare": "npm run build"
+    "publish": "node scripts/publish.mjs",
+    "release:patch": "npm version patch && npm run publish",
+    "release:minor": "npm version minor && npm run publish",
+    "release:major": "npm version major && npm run publish"
   },
   "prettier": "@saulx/prettier-config",
   "dependencies": {
@@ -18,10 +22,11 @@
     "@based/cli": "^7.2.3",
     "@saulx/prettier-config": "^2.0.0",
     "@saulx/tsconfig": "^1.1.3",
-    "@types/node": "^20.14.12",
+    "@types/node": "^22.0.0",
     "esbuild": "^0.23.0",
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "yaml": "^2.5.0"
   }
 }

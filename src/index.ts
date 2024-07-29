@@ -21,7 +21,7 @@ async function run() {
 
     if (!userID || !apiKey) {
       throw new Error(
-        '🧨 You need to pass the userID and the apiKey as input to the function to deploy your files.',
+        'You need to pass the userID and the apiKey as input to the function to deploy your files.',
       )
     }
 
@@ -30,7 +30,7 @@ async function run() {
     const basedJsonPath = join(process.cwd(), 'based.json')
     if (!existsSync(basedJsonPath)) {
       throw new Error(
-        '🧨 Was not possible to find the "based.json" file in the branch. Add the file and try again.',
+        'Was not possible to find the "based.json" file in the branch. Add the file and try again.',
       )
     }
 
@@ -39,11 +39,9 @@ async function run() {
     const basedJson = JSON.parse(readFileSync(basedJsonPath, 'utf-8'))
     const { org, project, env } = basedJson
 
-    // #branch check for env
-
     if (!org || !project || !env) {
       throw new Error(
-        '🧨 Was not possible to read the "based.json" file in the branch.',
+        'Was not possible to read the "based.json" file in the branch.',
       )
     }
 
@@ -66,28 +64,30 @@ async function run() {
 
     core.info('✅ Based AuthState set')
 
-    try {
-      core.info('🕘 Trying to create a new environment')
+    if (env === '#branch') {
+      try {
+        core.info('🕘 Trying to create a new environment')
 
-      await client.call('create-env', {
-        org,
-        project,
-        env: branchName,
-        config: size,
-        region,
-      })
+        await client.call('create-env', {
+          org,
+          project,
+          env: branchName,
+          config: size,
+          region,
+        })
 
-      core.info('✅ Waiting for the creation of the environment...')
-      await wait(30000)
-      core.info('✅ Environment created successfully.')
-    } catch (error) {
-      throw new Error(
-        `🧨 Error creating the environment: ${error.message}`,
-      )
+        core.info('✅ Waiting for the creation of the environment...')
+        await wait(30000)
+        core.info('✅ Environment created successfully.')
+      } catch (error) {
+        throw new Error(
+          `Error creating the environment: ${error.message}`,
+        )
+      }
     }
 
     core.info('☁️ Starting the Deploy using the Based CLI...')
-    const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${apiKey}"`)
+    const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key ${apiKey}`)
 
     core.info(`💬 stdout: ${stdout}`)
     core.error(`💬 stderr: ${stderr}`)

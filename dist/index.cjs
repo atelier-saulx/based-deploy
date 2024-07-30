@@ -36727,12 +36727,12 @@ var import_util2 = require("util");
 var execPromise = (0, import_util2.promisify)(import_child_process.exec);
 async function run() {
   try {
-    const userID = core.getInput("userID");
-    const apiKey = core.getInput("apiKey");
+    const userId = core.getInput("userID");
+    const token = core.getInput("apiKey");
     const size = core.getInput("size") ?? "small";
     const region = core.getInput("region") ?? "eu-central-1";
     const branchName = github.context.ref.replace("refs/heads/", "");
-    if (!userID || !apiKey) {
+    if (!userId || !token) {
       throw new Error(
         "You need to pass the userID and the apiKey as input to the function to deploy your files."
       );
@@ -36761,9 +36761,9 @@ async function run() {
     });
     core.info("\u2705 Based Client created");
     await client.setAuthState({
-      token: apiKey,
+      token,
       type: "serviceAccount",
-      userId: userID
+      userId
     });
     core.info("\u2705 Based AuthState set");
     if (env === "#branch") {
@@ -36786,7 +36786,7 @@ async function run() {
       }
     }
     core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");
-    const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key ${apiKey}`);
+    const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${token}"`);
     core.info(`\u{1F4AC} stdout: ${stdout}`);
     core.error(`\u{1F4AC} stderr: ${stderr}`);
     core.setOutput("response", "\u{1F389} Success! Enjoy your fastest deploy ever!");

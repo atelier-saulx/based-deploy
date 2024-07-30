@@ -18864,7 +18864,7 @@ var require_core = __commonJS({
 Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     }
     exports2.getBooleanInput = getBooleanInput;
-    function setOutput2(name, value) {
+    function setOutput(name, value) {
       const filePath = process.env["GITHUB_OUTPUT"] || "";
       if (filePath) {
         return file_command_1.issueFileCommand("OUTPUT", file_command_1.prepareKeyValueMessage(name, value));
@@ -18872,7 +18872,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       process.stdout.write(os.EOL);
       command_1.issueCommand("set-output", { name }, utils_1.toCommandValue(value));
     }
-    exports2.setOutput = setOutput2;
+    exports2.setOutput = setOutput;
     function setCommandEcho(enabled) {
       command_1.issue("echo", enabled ? "on" : "off");
     }
@@ -37800,9 +37800,9 @@ async function run() {
       }
     }
     core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");
-    const cli = await exec.exec("npx --yes @based/cli deploy", ["--api-key", token]);
-    core.info(`\u2705 CLI Return: ${cli}`);
-    core.setOutput("response", "\u{1F389} Success! Enjoy your fastest deploy ever!");
+    await exec.exec("npx --yes @based/cli deploy", ["--api-key", token]);
+    core.info("\u{1F389} Success! Enjoy your fastest deploy ever!");
+    return;
   } catch (error2) {
     core.setFailed(`\u{1F9E8} Error deploying your repo: ${error2.message}`);
   }

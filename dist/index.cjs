@@ -36786,14 +36786,12 @@ async function run() {
         await wait_default(3e4);
         core.info("\u2705 Environment created successfully.");
       } catch (error2) {
-        throw new Error(
-          `Error creating the environment: ${error2.message}`
-        );
+        core.error(`\u{1F9E8} Error creating the environment: ${error2.message}`);
       }
     }
     core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");
-    const cmd = `npx @based/cli deploy --api-key "${token}"`;
-    const { stdout, stderr } = await execPromise(cmd);
+    const cmd = `npx @based/cli deploy --api-key "$token"`;
+    const { stdout, stderr } = await execPromise(cmd, { env: { token } });
     core.info(`\u{1F4AC} stdout: ${stdout}`);
     core.error(`\u{1F4AC} stderr: ${stderr}`);
     core.setOutput("response", "\u{1F389} Success! Enjoy your fastest deploy ever!");

@@ -97,7 +97,7 @@ async function run() {
 
     core.info('🎉 Success! Enjoy your fastest deploy ever!')
 
-    return
+    process.exit()
   } catch (error) {
     core.setFailed(`🧨 Error deploying your repo: ${error.message}`)
   }

@@ -37802,7 +37802,7 @@ async function run() {
     core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");
     await exec.exec("npx --yes @based/cli deploy", ["--api-key", token]);
     core.info("\u{1F389} Success! Enjoy your fastest deploy ever!");
-    return;
+    process.exit();
   } catch (error2) {
     core.setFailed(`\u{1F9E8} Error deploying your repo: ${error2.message}`);
   }

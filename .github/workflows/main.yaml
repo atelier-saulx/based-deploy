@@ -18,7 +18,7 @@ jobs:
       - name: Build the action
         run: npm run build
       - name: Run the action
-        uses: atelier-saulx/based-deploy@v1.1.8
+        uses: atelier-saulx/based-deploy@v1.1.9
         env:
           userID: ${{ secrets.BASED_USER_ID }}
           apiKey: ${{ secrets.BASED_API_KEY }}

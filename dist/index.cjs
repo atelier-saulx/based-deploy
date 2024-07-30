@@ -36727,14 +36727,14 @@ var import_util2 = require("util");
 var execPromise = (0, import_util2.promisify)(import_child_process.exec);
 async function run() {
   try {
-    const userId = core.getInput("userID");
-    const token = core.getInput("apiKey");
+    const userId = process.env.userID;
+    const token = process.env.apiKey;
     const size = core.getInput("size") ?? "small";
     const region = core.getInput("region") ?? "eu-central-1";
     const branchName = github.context.ref.replace("refs/heads/", "");
     if (!userId || !token) {
       throw new Error(
-        "You need to pass the userID and the apiKey as input to the function to deploy your files."
+        "You need to set the userID and the apiKey as input to the function to deploy your files."
       );
     }
     core.info("\u2705 UserID and APIKey");

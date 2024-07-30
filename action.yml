@@ -1,12 +1,6 @@
 name: 'Based.io Deploy'
 description: 'Easily deploy your branch on Based.io'
 inputs:
-  userID:
-    description: 'The user ID created on the Based.io dashboard.'
-    required: true
-  apiKey:
-    description: 'The secret token for authentication with the Based.io API.'
-    required: true
   size:
     description: "The size of the environment, can be 'small' or 'large'. The default is 'small'."
     required: false

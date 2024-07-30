@@ -11,8 +11,8 @@ const execPromise = promisify(exec)
 
 async function run() {
   try {
-    const userId = core.getInput('userID')
-    const token = core.getInput('apiKey')
+    const userId = process.env.userID
+    const token = process.env.apiKey
     const size = core.getInput('size') ?? 'small'
     const region = core.getInput('region') ?? 'eu-central-1'
     // const repository = github.context.repo.repo
@@ -21,7 +21,7 @@ async function run() {
 
     if (!userId || !token) {
       throw new Error(
-        'You need to pass the userID and the apiKey as input to the function to deploy your files.',
+        'You need to set the userID and the apiKey as input to the function to deploy your files.',
       )
     }
 

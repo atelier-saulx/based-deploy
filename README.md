@@ -4,19 +4,19 @@ Deploy your branch easily in your Based.io account using this GitHub Action.
 
 ## Inputs
 
-### `userID`
+### `userID` (as an 'env' variable)
 
 **Required** The user ID created on the Based.io dashboard.
 
-### `apiKey`
+### `apiKey` (as an 'env' variable)
 
 **Required** The secret token for authentication with the Based.io API.
 
-### `size`
+### `size` (as input parameter)
 
 **Not Required** The size of the environment, can be 'small' or 'large'. The default is 'small'.
 
-### `region`
+### `region` (as input parameter)
 
 **Not Required** In which region would you like to spawn the environment? You can choose between 'eu-central-1', 'sa-east-1', 'us-east-1', 'us-west-1', 'ap-southeast-2'. The default is 'eu-central-1'.
 
@@ -44,11 +44,13 @@ A Success/Error message containing the Based CLI output.
 <img src="https://raw.githubusercontent.com/atelier-saulx/based-deploy/main/steps/step4.png" width="500" />
 
 * Your dashboard will update with your new service account created. Now you can use this action passing the information to the workflow.
+* Note that you must use 'userID' and 'apiKey' as the env's variable's names.
 
 ```yaml
-uses: atelier-saulx/based-deploy@v1.1.3
-with:
-  userID: ${{ secrets.BASED_USER_ID }}
-  apiKey: ${{ secrets.BASED_API_KEY }}
-  size: 'small'
-  region: 'eu-central-1'
+    uses: atelier-saulx/based-deploy@v1.1.3
+    env:
+      userID: ${{ secrets.BASED_USER_ID }}
+      apiKey: ${{ secrets.BASED_API_KEY }}
+    with:
+      size: small
+      region: eu-central-1

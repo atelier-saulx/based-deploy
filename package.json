@@ -11,8 +11,8 @@
     "release:minor": "npm run prepare && npm run commit && npm version minor && npm run publish && npm run commit && npm run push",
     "release:major": "npm run prepare && npm run commit && npm version major && npm run publish && npm run commit && npm run push",
     "commit": "git add . && git commit -m 'Publishing new version'",
-    "tag": "PACKAGE_VERSION=$(sed -n '/\"version\"/s/[^0-9.]//gp' package.json | tr -d '\n') && git tag -a v$PACKAGE_VERSION -m 'Releasing version v$PACKAGE_VERSION' && git push --tags",
-    "push": "git push"
+    "tag": "PACKAGE_VERSION=$(sed -n '/\"version\"/s/[^0-9.]//gp' package.json | tr -d '\n') && git tag -a v$PACKAGE_VERSION -m 'Releasing version v$PACKAGE_VERSION'",
+    "push": "git push --tags && git push"
   },
   "prettier": "@saulx/prettier-config",
   "dependencies": {

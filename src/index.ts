@@ -93,7 +93,9 @@ async function run() {
 
     core.info('☁️ Starting the Deploy using the Based CLI...')
 
-    await exec.exec('npx --yes @based/cli deploy', ['--api-key', token])
+    const cli = await exec.exec('npx --yes @based/cli deploy', ['--api-key', token])
+
+    core.info(`✅ CLI Return: ${cli}`)
 
     core.setOutput('response', '🎉 Success! Enjoy your fastest deploy ever!')
   } catch (error) {

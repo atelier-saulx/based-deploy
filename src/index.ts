@@ -1,13 +1,14 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
+import * as libnpmexec from 'libnpmexec'
 import { BasedClient } from '@based/client'
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
-import { exec } from 'child_process'
-import { promisify } from 'util'
+// import { exec } from 'child_process'
+// import { promisify } from 'util'
 import { wait } from '@saulx/utils'
 
-const execPromise = promisify(exec)
+// const execPromise = promisify(exec)
 
 async function run() {
   try {
@@ -93,10 +94,16 @@ async function run() {
     }
 
     core.info('☁️ Starting the Deploy using the Based CLI...')
-    const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${token}"`)
 
-    core.info(`💬 stdout: ${stdout}`)
-    core.error(`💬 stderr: ${stderr}`)
+    const cli = await libnpmexec({
+      args: ['@based/cli', 'deploy', '--api-key', token],
+      yes: true,
+    })
+    core.info(`💬 CLI: ${cli}`)
+
+    // const { stdout, stderr } = await execPromise(`npx @based/cli deploy --api-key "${token}"`)
+    // core.info(`💬 stdout: ${stdout}`)
+    // core.error(`💬 stderr: ${stderr}`)
 
     core.setOutput('response', '🎉 Success! Enjoy your fastest deploy ever!')
   } catch (error) {

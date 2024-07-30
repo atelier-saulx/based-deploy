@@ -12,8 +12,8 @@ import { wait } from '@saulx/utils'
 
 async function run() {
   try {
-    const userId = process.env.userID
-    const token = process.env.apiKey
+    const userId = core.getInput('userID')
+    const token = core.getInput('apiKey')
     const size = core.getInput('size') ?? 'small'
     const region = core.getInput('region') ?? 'eu-central-1'
     // const repository = github.context.repo.repo
@@ -93,12 +93,7 @@ async function run() {
 
     core.info('☁️ Starting the Deploy using the Based CLI...')
 
-    // const cmd = `npx @based/cli deploy --api-key $token`
-    // const { stdout, stderr } = await execPromise(cmd, {env: {token: token}})
-    // core.info(`💬 stdout: ${stdout}`)
-    // core.error(`💬 stderr: ${stderr}`)
-
-    await exec.exec('npx @based/cli deploy', ['--api-key', token])
+    await exec.exec('npx --yes @based/cli deploy', ['--api-key', token])
 
     core.setOutput('response', '🎉 Success! Enjoy your fastest deploy ever!')
   } catch (error) {

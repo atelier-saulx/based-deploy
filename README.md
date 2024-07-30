@@ -48,9 +48,8 @@ A Success/Error message containing the Based CLI output.
 
 ```yaml
     uses: atelier-saulx/based-deploy@v1.1.10
-    env:
+    with:
       userID: ${{ secrets.BASED_USER_ID }}
       apiKey: ${{ secrets.BASED_API_KEY }}
-    with:
       size: small
       region: eu-central-1

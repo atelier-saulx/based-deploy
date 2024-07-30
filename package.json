@@ -17,6 +17,7 @@
   "prettier": "@saulx/prettier-config",
   "dependencies": {
     "@actions/core": "^1.10.1",
+    "@actions/exec": "^1.1.1",
     "@actions/github": "^6.0.0",
     "@based/client": "^6.9.1",
     "@saulx/utils": "^5.0.0"

@@ -92,8 +92,8 @@ async function run() {
 
     core.info('☁️ Starting the Deploy using the Based CLI...')
 
-    const cmd = `npx @based/cli deploy --api-key "$token"`
-    const { stdout, stderr } = await execPromise(cmd, {env: {token}})
+    const cmd = `npx @based/cli deploy --api-key $token`
+    const { stdout, stderr } = await execPromise(cmd, {env: {token: token}})
     core.info(`💬 stdout: ${stdout}`)
     core.error(`💬 stderr: ${stderr}`)
 

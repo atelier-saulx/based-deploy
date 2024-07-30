@@ -36790,7 +36790,7 @@ async function run() {
       }
     }
     core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");
-    const cmd = `npx @based/cli deploy --api-key "$token"`;
+    const cmd = `npx @based/cli deploy --api-key $token`;
     const { stdout, stderr } = await execPromise(cmd, { env: { token } });
     core.info(`\u{1F4AC} stdout: ${stdout}`);
     core.error(`\u{1F4AC} stderr: ${stderr}`);

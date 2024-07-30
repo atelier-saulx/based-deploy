@@ -56,13 +56,19 @@ async function run() {
 
     core.info('✅ Based Client created')
 
-    await client.setAuthState({
-      token,
-      type: 'serviceAccount',
-      userId,
-    })
+    try {
+      await client.setAuthState({
+        token,
+        type: 'serviceAccount',
+        userId,
+      })
 
-    core.info('✅ Based AuthState set')
+      core.info('✅ Based AuthState set')
+    } catch (error) {
+      throw new Error(
+        `Was not possible to log in using your credentials. Error: ${error.message}`,
+      )
+    }
 
     if (env === '#branch') {
       try {

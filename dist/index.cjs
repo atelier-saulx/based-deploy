@@ -36760,12 +36760,18 @@ async function run() {
       name: "@based/admin-hub"
     });
     core.info("\u2705 Based Client created");
-    await client.setAuthState({
-      token,
-      type: "serviceAccount",
-      userId
-    });
-    core.info("\u2705 Based AuthState set");
+    try {
+      await client.setAuthState({
+        token,
+        type: "serviceAccount",
+        userId
+      });
+      core.info("\u2705 Based AuthState set");
+    } catch (error2) {
+      throw new Error(
+        `Was not possible to log in using your credentials. Error: ${error2.message}`
+      );
+    }
     if (env === "#branch") {
       try {
         core.info("\u{1F558} Trying to create a new environment");

@@ -73,19 +73,27 @@ async function run() {
 
     if (env === '#branch') {
       try {
-        core.info('🕘 Trying to create a new environment')
+        core.info(`🕘 Checking if the environment '${branchName}' already exists...`)
 
-        await client.call('create-env', {
-          org,
-          project,
-          env: branchName,
-          config: size,
-          region,
-        })
+        const { envId } = await client.call('based:env-info')
 
-        core.info('✅ Waiting for the creation of the environment...')
-        await wait(30000)
-        core.info('✅ Environment created successfully.')
+        if (!envId) {
+          core.info('🕘 Trying to create a new environment')
+
+          await client.call('create-env', {
+            org,
+            project,
+            env: branchName,
+            config: size,
+            region,
+          })
+
+          core.info('✅ Waiting for the creation of the environment...')
+          await wait(30000)
+          core.info('✅ Environment created successfully.')
+        } else {
+          core.info(`✅ Environment '${branchName}' founded`)
+        }
       } catch (error) {
         core.error(`🧨 Error creating the environment: ${error.message}`)
       }

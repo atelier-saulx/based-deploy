@@ -37783,26 +37783,21 @@ async function run() {
       );
     }
     if (env === "#branch") {
+      core.info(`\u{1F558} Checking if the environment '${branchName}' already exists. If doesn't, it'll be created.`);
       try {
-        core.info(`\u{1F558} Checking if the environment '${branchName}' already exists...`);
-        const { envId } = await client.call("based:env-info");
-        if (!envId) {
-          core.info("\u{1F558} Trying to create a new environment");
-          await client.call("create-env", {
-            org,
-            project,
-            env: branchName,
-            config: size,
-            region
-          });
-          core.info("\u2705 Waiting for the creation of the environment...");
-          await wait_default(3e4);
-          core.info("\u2705 Environment created successfully.");
-        } else {
-          core.info(`\u2705 Environment '${branchName}' founded`);
-        }
+        await client.call("create-env", {
+          org,
+          project,
+          env: branchName,
+          config: size,
+          region
+        });
+        core.info("\u{1F558} Trying to create a new environment");
+        core.info("\u2705 Waiting for the creation of the environment...");
+        await wait_default(3e4);
+        core.info("\u2705 Environment created successfully.");
       } catch (error2) {
-        core.error(`\u{1F9E8} Error creating the environment: ${error2.message}`);
+        core.error(`\u{1F9E8} Error managing the environment: ${error2.message}`);
       }
     }
     core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");

@@ -37737,11 +37737,12 @@ var import_fs2 = require("fs");
 var import_path2 = require("path");
 var getEnvByName = async (client, org, project, env) => {
   try {
-    core.info(`\u{1F558} Checking if the environment '${env}' already exists.`);
+    core.info(`\u{1F558} Checking if the environment '${env}' exists.`);
     await client.query("env", { org, project, env }).get();
     core.info(`\u2705 Environment '${env}' found! Working on it.`);
     return true;
   } catch (_) {
+    core.info(`\u26A0\uFE0F Environment '${env}' not found!`);
     return false;
   }
 };
@@ -37800,13 +37801,7 @@ async function run() {
         `Was not possible to log in using your credentials. Error: ${error.message}`
       );
     }
-    core.info(`\u{1F558} Checking if the environment '${env}' exists...`);
     const isEnvFound = await getEnvByName(client, org, project, env);
-    if (isEnvFound) {
-      core.info(`\u2705 Environment '${env}' found!`);
-    } else {
-      core.info(`\u26A0\uFE0F Environment '${env}' not found!`);
-    }
     if (!isToCreateEnv) {
       if (!isEnvFound) {
         throw new Error("Is not possible to delete an environment that doesn't exist.");

@@ -8,7 +8,7 @@ import { wait } from '@saulx/utils'
 
 const getEnvByName = async (client: BasedClient, org: string, project: string, env: string) => {
   try {
-    core.info(`🕘 Checking if the environment '${env}' already exists.`)
+    core.info(`🕘 Checking if the environment '${env}' exists.`)
 
     await client.query('env', { org, project, env }).get()
 
@@ -16,6 +16,8 @@ const getEnvByName = async (client: BasedClient, org: string, project: string, e
 
     return true
   } catch (_) {
+    core.info(`⚠️ Environment '${env}' not found!`)
+
     return false
   }
 }
@@ -91,14 +93,7 @@ async function run() {
       )
     }
 
-    core.info(`🕘 Checking if the environment '${env}' exists...`)
     const isEnvFound = await getEnvByName(client, org, project, env)
-
-    if (isEnvFound) {
-      core.info(`✅ Environment '${env}' found!`)
-    } else {
-      core.info(`⚠️ Environment '${env}' not found!`)
-    }
 
     if (!isToCreateEnv) {
       if (!isEnvFound) {

@@ -37,10 +37,10 @@ async function run() {
     const size = core.getInput('size') || 'small'
     const region = core.getInput('region') || 'eu-central-1'
     const action = core.getInput('action') || 'create-env'
-    const branchName = github.context?.ref?.replace('refs/heads/', '')
     const isToCreateEnv = action === 'create-env'
+    const branchName = isToCreateEnv ? github.context?.ref?.replace('refs/heads/', '') : github.context?.payload?.ref
 
-    core.info(`github.event.ref ${JSON.stringify(github.context)}`)
+    // core.info(`github.event.ref ${JSON.stringify(github.context)}`)
 
     if (!userId || !token) {
       throw new Error(

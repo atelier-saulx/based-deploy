@@ -72,27 +72,32 @@ async function run() {
     }
 
     if (env === '#branch') {
-      core.info(`🕘 Checking if the environment '${branchName}' already exists. If doesn't, it'll be created.`)
-
-      const data = client.query('env', { org, project, env: branchName }).get()
-
-      core.info(`env info ${JSON.stringify(data)}`)
-
       try {
-        await client.call('create-env', {
-          org,
-          project,
-          env: branchName,
-          config: size,
-          region,
-        })
+        core.info(`🕘 Checking if the environment '${branchName}' already exists. If doesn't, it'll be created.`)
 
-        core.info('🕘 Trying to create a new environment')
-        core.info('✅ Waiting for the creation of the environment...')
-        await wait(30000)
-        core.info('✅ Environment created successfully.')
-      } catch (error) {
-        core.warning(error.message)
+        await client.query('env', { org, project, env: branchName }).get()
+
+        core.info(`✅ Environment '${branchName}' found! Deploying on it.`)
+      } catch (_) {
+        core.warning('⚠️ Environment not found.')
+
+        try {
+          core.info('🕘 Trying to create a new environment.')
+
+          await client.call('create-env', {
+            org,
+            project,
+            env: branchName,
+            config: size,
+            region,
+          })
+
+          core.info('✅ Waiting for the creation of the environment...')
+          await wait(30000)
+          core.info('✅ Environment created successfully.')
+        } catch (error) {
+          core.error(`🧨 Error managing the environment: ${error.message}`)
+        }
       }
     }
 

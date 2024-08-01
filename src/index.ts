@@ -4,11 +4,29 @@ import * as github from '@actions/github'
 import { BasedClient } from '@based/client'
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
-// import { exec } from 'child_process'
-// import { promisify } from 'util'
 import { wait } from '@saulx/utils'
 
-// const execPromise = promisify(exec)
+const getEnvByName = async (client: BasedClient, org: string, project: string, env: string) => {
+  try {
+    core.info(`🕘 Checking if the environment '${env}' already exists.`)
+
+    await client.query('env', { org, project, env }).get()
+
+    core.info(`✅ Environment '${env}' found! Working on it.`)
+
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+const deploy = async (token: string) => {
+  core.info('☁️ Starting the Deploy using the Based CLI...')
+
+  await exec.exec('npx --yes @based/cli deploy', ['--api-key', token])
+
+  core.info('🎉 Success! Enjoy your fastest deploy ever!')
+}
 
 async function run() {
   try {
@@ -16,9 +34,9 @@ async function run() {
     const token = core.getInput('apiKey')
     const size = core.getInput('size') ?? 'small'
     const region = core.getInput('region') ?? 'eu-central-1'
-    // const repository = github.context.repo.repo
+    const action = core.getInput('action') ?? 'create-env'
     const branchName = github.context?.ref?.replace('refs/heads/', '')
-    // const branchUrl = `https://github.com/${github.context.repo.owner}/${repository}/tree/${branchName}`
+    const isToCreateEnv = action === 'create-env'
 
     if (!userId || !token) {
       throw new Error(
@@ -38,7 +56,7 @@ async function run() {
     core.info('✅ Loaded "based.json"')
 
     const basedJson = JSON.parse(readFileSync(basedJsonPath, 'utf-8'))
-    const { org, project, env } = basedJson
+    let { org, project, env } = basedJson
 
     if (!org || !project || !env) {
       throw new Error(
@@ -47,6 +65,8 @@ async function run() {
     }
 
     core.info('✅ Parsed "based.json"')
+
+    env = env === '#branch' ? branchName : env
 
     const client = new BasedClient({
       org: 'saulx',
@@ -71,45 +91,62 @@ async function run() {
       )
     }
 
-    if (env === '#branch') {
+    core.info(`🕘 Checking if the environment '${env}' exists...`)
+    const isEnvFound = await getEnvByName(client, org, project, env)
+
+    if (isEnvFound) {
+      core.info(`✅ Environment '${env}' found!`)
+    } else {
+      core.info(`⚠️ Environment '${env}' not found!`)
+    }
+
+    if (!isToCreateEnv) {
+      if (!isEnvFound) {
+        throw new Error("Is not possible to delete an environment that doesn't exist.")
+      }
+
+      core.info('🕘 Trying to delete the environment...')
+
       try {
-        core.info(`🕘 Checking if the environment '${branchName}' already exists. If doesn't, it'll be created.`)
+        await client.call('remove-env', {
+          org,
+          project,
+          env,
+        })
 
-        await client.query('env', { org, project, env: branchName }).get()
+        core.info(`✅ Environment '${env}' deleted successfully.`)
 
-        core.info(`✅ Environment '${branchName}' found! Deploying on it.`)
-      } catch (_) {
-        core.warning('⚠️ Environment not found.')
-
-        try {
-          core.info('🕘 Trying to create a new environment.')
-
-          await client.call('create-env', {
-            org,
-            project,
-            env: branchName,
-            config: size,
-            region,
-          })
-
-          core.info('✅ Waiting for the creation of the environment...')
-          await wait(30000)
-          core.info('✅ Environment created successfully.')
-        } catch (error) {
-          core.error(`🧨 Error managing the environment: ${error.message}`)
-        }
+        process.exit()
+      } catch (error) {
+        throw new Error(`Error deleting the environment: ${error.message}`)
       }
     }
 
-    core.info('☁️ Starting the Deploy using the Based CLI...')
+    if (isToCreateEnv && !isEnvFound) {
+      try {
+        core.info('🕘 Trying to create a new environment.')
 
-    await exec.exec('npx --yes @based/cli deploy', ['--api-key', token])
+        await client.call('create-env', {
+          org,
+          project,
+          env: branchName,
+          config: size,
+          region,
+        })
 
-    core.info('🎉 Success! Enjoy your fastest deploy ever!')
+        core.info('✅ Waiting for the creation of the environment...')
+        await wait(35000)
+        core.info('✅ Environment created successfully.')
+      } catch (error) {
+        throw new Error(`Error creating the environment: ${error.message}`)
+      }
+    }
+
+    await deploy(token)
 
     process.exit()
   } catch (error) {
-    core.setFailed(`🧨 Error deploying your repo: ${error.message}`)
+    core.setFailed(`🧨 Error: ${error.message}`)
   }
 }
 

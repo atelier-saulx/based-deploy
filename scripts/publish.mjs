@@ -15,14 +15,8 @@ const saveFile = (file, content) => {
     });
 }
 
-const publish = async () => {
-    const pathYaml = './.github/workflows/main.yaml'
-    const pathReadme = './README.md'
-    const yaml = parse(fs.readFileSync(pathYaml, 'utf8'))
-    const readme = fs.readFileSync(pathReadme, 'utf8')
-    const { version } = JSON.parse(fs.readFileSync('./package.json', 'utf8'))
-
-    const finalYaml = stringify({
+const parseYaml = (yaml, version) => {
+    return stringify({
         ...yaml,
         jobs: {
             ...yaml.jobs,
@@ -43,10 +37,24 @@ const publish = async () => {
             }
         }
     })
+}
+
+const publish = async () => {
+    const pathCreateYaml = './.github/workflows/deploy.yaml'
+    const pathDeleteYaml = './.github/workflows/delete.yaml'
+    const pathReadme = './README.md'
+    const createYaml = parse(fs.readFileSync(pathCreateYaml, 'utf8'))
+    const deleteYaml = parse(fs.readFileSync(pathDeleteYaml, 'utf8'))
+    const readme = fs.readFileSync(pathReadme, 'utf8')
+    const { version } = JSON.parse(fs.readFileSync('./package.json', 'utf8'))
+
+    const finalCreateYaml = parseYaml(createYaml, version)
+    const finalDeleteYaml = parseYaml(deleteYaml, version)
 
     const finalReadme = replaceVersion(readme, version)
 
-    saveFile(pathYaml, finalYaml)
+    saveFile(pathCreateYaml, finalCreateYaml)
+    saveFile(pathDeleteYaml, finalDeleteYaml)
     saveFile(pathReadme, finalReadme)
 }
 

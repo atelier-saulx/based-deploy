@@ -1,0 +1,25 @@
+name: Delete Branch in Based.io
+on:
+  delete:
+    branches:
+      - "*"
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.15.0
+      - name: Install dependencies
+        run: npm install
+      - name: Build the action
+        run: npm run build
+      - name: Run the action
+        uses: atelier-saulx/based-deploy@v1.1.32
+        with:
+          userID: ${{ secrets.BASED_USER_ID }}
+          apiKey: ${{ secrets.BASED_API_KEY }}
+          size: small
+          region: eu-central-1
+          action: delete-env

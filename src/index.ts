@@ -40,8 +40,6 @@ async function run() {
     const isToCreateEnv = action === 'create-env'
     const branchName = isToCreateEnv ? github.context?.ref?.replace('refs/heads/', '') : github.context?.payload?.ref
 
-    // core.info(`github.event.ref ${JSON.stringify(github.context)}`)
-
     if (!userId || !token) {
       throw new Error(
         'You need to set the userID and the apiKey as input to the function to deploy your files.',

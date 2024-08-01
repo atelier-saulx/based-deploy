@@ -15,15 +15,15 @@ const saveFile = (file, content) => {
     });
 }
 
-const parseYaml = (yaml, version) => {
+const parseYaml = (yaml, type, version) => {
     return stringify({
         ...yaml,
         jobs: {
             ...yaml.jobs,
             deploy: {
-                ...yaml.jobs.deploy,
+                ...yaml.jobs[type],
                 steps: [
-                    ...yaml.jobs.deploy.steps.map((elm) => {
+                    ...yaml.jobs[type].steps.map((elm) => {
                         if (!elm.uses) return elm
 
                         const uses = replaceVersion(elm.uses, version)
@@ -48,8 +48,8 @@ const publish = async () => {
     const readme = fs.readFileSync(pathReadme, 'utf8')
     const { version } = JSON.parse(fs.readFileSync('./package.json', 'utf8'))
 
-    const finalCreateYaml = parseYaml(createYaml, version)
-    const finalDeleteYaml = parseYaml(deleteYaml, version)
+    const finalCreateYaml = parseYaml(createYaml, 'deploy', version)
+    const finalDeleteYaml = parseYaml(deleteYaml, 'delete', version)
 
     const finalReadme = replaceVersion(readme, version)
 

@@ -37755,9 +37755,9 @@ async function run() {
   try {
     const userId = core.getInput("userID");
     const token = core.getInput("apiKey");
-    const size = core.getInput("size") ?? "small";
-    const region = core.getInput("region") ?? "eu-central-1";
-    const action = core.getInput("action") ?? "create-env";
+    const size = core.getInput("size") ? core.getInput("size") : "small";
+    const region = core.getInput("region") ? core.getInput("region") : "eu-central-1";
+    const action = core.getInput("action") ? core.getInput("action") : "create-env";
     const branchName = github.context?.ref?.replace("refs/heads/", "");
     const isToCreateEnv = action === "create-env";
     if (!userId || !token) {

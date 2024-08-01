@@ -20,7 +20,7 @@ const parseYaml = (yaml, type, version) => {
         ...yaml,
         jobs: {
             ...yaml.jobs,
-            deploy: {
+            [type]: {
                 ...yaml.jobs[type],
                 steps: [
                     ...yaml.jobs[type].steps.map((elm) => {

@@ -47,7 +47,7 @@ A Success/Error message containing the Based CLI output.
 * Note that you must use 'userID' and 'apiKey' as the env's variable's names.
 
 ```yaml
-    uses: atelier-saulx/based-deploy@v1.1.34
+    uses: atelier-saulx/based-deploy@v1.1.35
     with:
       userID: ${{ secrets.BASED_USER_ID }}
       apiKey: ${{ secrets.BASED_API_KEY }}

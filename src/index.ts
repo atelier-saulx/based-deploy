@@ -142,6 +142,8 @@ async function run() {
     process.exit()
   } catch (error) {
     core.setFailed(`🧨 Error: ${error.message}`)
+    
+    process.exit()
   }
 }
 

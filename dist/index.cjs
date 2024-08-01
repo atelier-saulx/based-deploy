@@ -37840,6 +37840,7 @@ async function run() {
     process.exit();
   } catch (error) {
     core.setFailed(`\u{1F9E8} Error: ${error.message}`);
+    process.exit();
   }
 }
 run();

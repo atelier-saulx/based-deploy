@@ -737,18 +737,18 @@ var require_tunnel = __commonJS({
             res.statusCode
           );
           socket.destroy();
-          var error2 = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
-          error2.code = "ECONNRESET";
-          options.request.emit("error", error2);
+          var error = new Error("tunneling socket could not be established, statusCode=" + res.statusCode);
+          error.code = "ECONNRESET";
+          options.request.emit("error", error);
           self2.removeSocket(placeholder);
           return;
         }
         if (head.length > 0) {
           debug("got illegal response body from proxy");
           socket.destroy();
-          var error2 = new Error("got illegal response body from proxy");
-          error2.code = "ECONNRESET";
-          options.request.emit("error", error2);
+          var error = new Error("got illegal response body from proxy");
+          error.code = "ECONNRESET";
+          options.request.emit("error", error);
           self2.removeSocket(placeholder);
           return;
         }
@@ -763,9 +763,9 @@ var require_tunnel = __commonJS({
           cause.message,
           cause.stack
         );
-        var error2 = new Error("tunneling socket could not be established, cause=" + cause.message);
-        error2.code = "ECONNRESET";
-        options.request.emit("error", error2);
+        var error = new Error("tunneling socket could not be established, cause=" + cause.message);
+        error.code = "ECONNRESET";
+        options.request.emit("error", error);
         self2.removeSocket(placeholder);
       }
     };
@@ -5870,7 +5870,7 @@ Content-Type: ${value.type || "application/octet-stream"}\r
         throw new TypeError("Body is unusable");
       }
       const promise = createDeferredPromise();
-      const errorSteps = (error2) => promise.reject(error2);
+      const errorSteps = (error) => promise.reject(error);
       const successSteps = (data) => {
         try {
           promise.resolve(convertBytesToJSValue(data));
@@ -6156,16 +6156,16 @@ var require_request = __commonJS({
           this.onError(err2);
         }
       }
-      onError(error2) {
+      onError(error) {
         this.onFinally();
         if (channels.error.hasSubscribers) {
-          channels.error.publish({ request: this, error: error2 });
+          channels.error.publish({ request: this, error });
         }
         if (this.aborted) {
           return;
         }
         this.aborted = true;
-        return this[kHandler].onError(error2);
+        return this[kHandler].onError(error);
       }
       onFinally() {
         if (this.errorHandler) {
@@ -7028,8 +7028,8 @@ var require_RedirectHandler = __commonJS({
       onUpgrade(statusCode, headers, socket) {
         this.handler.onUpgrade(statusCode, headers, socket);
       }
-      onError(error2) {
-        this.handler.onError(error2);
+      onError(error) {
+        this.handler.onError(error);
       }
       onHeaders(statusCode, headers, resume, statusText) {
         this.location = this.history.length >= this.maxRedirections || util.isDisturbed(this.opts.body) ? null : parseLocation(statusCode, headers);
@@ -10771,13 +10771,13 @@ var require_mock_utils = __commonJS({
       if (mockDispatch2.data.callback) {
         mockDispatch2.data = { ...mockDispatch2.data, ...mockDispatch2.data.callback(opts) };
       }
-      const { data: { statusCode, data, headers, trailers, error: error2 }, delay, persist } = mockDispatch2;
+      const { data: { statusCode, data, headers, trailers, error }, delay, persist } = mockDispatch2;
       const { timesInvoked, times } = mockDispatch2;
       mockDispatch2.consumed = !persist && timesInvoked >= times;
       mockDispatch2.pending = timesInvoked < times;
-      if (error2 !== null) {
+      if (error !== null) {
         deleteMockDispatch(this[kDispatches], key);
-        handler.onError(error2);
+        handler.onError(error);
         return true;
       }
       if (typeof delay === "number" && delay > 0) {
@@ -10815,19 +10815,19 @@ var require_mock_utils = __commonJS({
         if (agent.isMockActive) {
           try {
             mockDispatch.call(this, opts, handler);
-          } catch (error2) {
-            if (error2 instanceof MockNotMatchedError) {
+          } catch (error) {
+            if (error instanceof MockNotMatchedError) {
               const netConnect = agent[kGetNetConnect]();
               if (netConnect === false) {
-                throw new MockNotMatchedError(`${error2.message}: subsequent request to origin ${origin} was not allowed (net.connect disabled)`);
+                throw new MockNotMatchedError(`${error.message}: subsequent request to origin ${origin} was not allowed (net.connect disabled)`);
               }
               if (checkNetConnect(netConnect, origin)) {
                 originalDispatch.call(this, opts, handler);
               } else {
-                throw new MockNotMatchedError(`${error2.message}: subsequent request to origin ${origin} was not allowed (net.connect is not enabled for this origin)`);
+                throw new MockNotMatchedError(`${error.message}: subsequent request to origin ${origin} was not allowed (net.connect is not enabled for this origin)`);
               }
             } else {
-              throw error2;
+              throw error;
             }
           }
         } else {
@@ -10990,11 +10990,11 @@ var require_mock_interceptor = __commonJS({
       /**
        * Mock an undici request with a defined error.
        */
-      replyWithError(error2) {
-        if (typeof error2 === "undefined") {
+      replyWithError(error) {
+        if (typeof error === "undefined") {
           throw new InvalidArgumentError("error must be defined");
         }
-        const newMockDispatch = addMockDispatch(this[kDispatches], this[kDispatchKey], { error: error2 });
+        const newMockDispatch = addMockDispatch(this[kDispatches], this[kDispatchKey], { error });
         return new MockScope(newMockDispatch);
       }
       /**
@@ -13317,17 +13317,17 @@ var require_fetch = __commonJS({
         this.emit("terminated", reason);
       }
       // https://fetch.spec.whatwg.org/#fetch-controller-abort
-      abort(error2) {
+      abort(error) {
         if (this.state !== "ongoing") {
           return;
         }
         this.state = "aborted";
-        if (!error2) {
-          error2 = new DOMException3("The operation was aborted.", "AbortError");
+        if (!error) {
+          error = new DOMException3("The operation was aborted.", "AbortError");
         }
-        this.serializedAbortReason = error2;
-        this.connection?.destroy(error2);
-        this.emit("terminated", error2);
+        this.serializedAbortReason = error;
+        this.connection?.destroy(error);
+        this.emit("terminated", error);
       }
     };
     function fetch3(input, init = {}) {
@@ -13431,13 +13431,13 @@ var require_fetch = __commonJS({
         performance.markResourceTiming(timingInfo, originalURL.href, initiatorType, globalThis2, cacheState);
       }
     }
-    function abortFetch(p, request, responseObject, error2) {
-      if (!error2) {
-        error2 = new DOMException3("The operation was aborted.", "AbortError");
+    function abortFetch(p, request, responseObject, error) {
+      if (!error) {
+        error = new DOMException3("The operation was aborted.", "AbortError");
       }
-      p.reject(error2);
+      p.reject(error);
       if (request.body != null && isReadable(request.body?.stream)) {
-        request.body.stream.cancel(error2).catch((err2) => {
+        request.body.stream.cancel(error).catch((err2) => {
           if (err2.code === "ERR_INVALID_STATE") {
             return;
           }
@@ -13449,7 +13449,7 @@ var require_fetch = __commonJS({
       }
       const response = responseObject[kState];
       if (response.body != null && isReadable(response.body?.stream)) {
-        response.body.stream.cancel(error2).catch((err2) => {
+        response.body.stream.cancel(error).catch((err2) => {
           if (err2.code === "ERR_INVALID_STATE") {
             return;
           }
@@ -14229,13 +14229,13 @@ var require_fetch = __commonJS({
               fetchParams.controller.ended = true;
               this.body.push(null);
             },
-            onError(error2) {
+            onError(error) {
               if (this.abort) {
                 fetchParams.controller.off("terminated", this.abort);
               }
-              this.body?.destroy(error2);
-              fetchParams.controller.terminate(error2);
-              reject(error2);
+              this.body?.destroy(error);
+              fetchParams.controller.terminate(error);
+              reject(error);
             },
             onUpgrade(status, headersList, socket) {
               if (status !== 101) {
@@ -14701,8 +14701,8 @@ var require_util4 = __commonJS({
                   }
                   fr[kResult] = result;
                   fireAProgressEvent("load", fr);
-                } catch (error2) {
-                  fr[kError] = error2;
+                } catch (error) {
+                  fr[kError] = error;
                   fireAProgressEvent("error", fr);
                 }
                 if (fr[kState] !== "loading") {
@@ -14711,13 +14711,13 @@ var require_util4 = __commonJS({
               });
               break;
             }
-          } catch (error2) {
+          } catch (error) {
             if (fr[kAborted]) {
               return;
             }
             queueMicrotask(() => {
               fr[kState] = "done";
-              fr[kError] = error2;
+              fr[kError] = error;
               fireAProgressEvent("error", fr);
               if (fr[kState] !== "loading") {
                 fireAProgressEvent("loadend", fr);
@@ -16731,11 +16731,11 @@ var require_connection = __commonJS({
         });
       }
     }
-    function onSocketError(error2) {
+    function onSocketError(error) {
       const { ws } = this;
       ws[kReadyState] = states.CLOSING;
       if (channels.socketError.hasSubscribers) {
-        channels.socketError.publish(error2);
+        channels.socketError.publish(error);
       }
       this.destroy();
     }
@@ -18367,12 +18367,12 @@ var require_oidc_utils = __commonJS({
         var _a2;
         return __awaiter(this, void 0, void 0, function* () {
           const httpclient = _OidcClient.createHttpClient();
-          const res = yield httpclient.getJson(id_token_url).catch((error2) => {
+          const res = yield httpclient.getJson(id_token_url).catch((error) => {
             throw new Error(`Failed to get ID Token. 
  
-        Error Code : ${error2.statusCode}
+        Error Code : ${error.statusCode}
  
-        Error Message: ${error2.message}`);
+        Error Message: ${error.message}`);
           });
           const id_token = (_a2 = res.result) === null || _a2 === void 0 ? void 0 : _a2.value;
           if (!id_token) {
@@ -18393,8 +18393,8 @@ var require_oidc_utils = __commonJS({
             const id_token = yield _OidcClient.getCall(id_token_url);
             core_1.setSecret(id_token);
             return id_token;
-          } catch (error2) {
-            throw new Error(`Error message: ${error2.message}`);
+          } catch (error) {
+            throw new Error(`Error message: ${error.message}`);
           }
         });
       }
@@ -18879,7 +18879,7 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
     exports2.setCommandEcho = setCommandEcho;
     function setFailed2(message) {
       process.exitCode = ExitCode.Failure;
-      error2(message);
+      error(message);
     }
     exports2.setFailed = setFailed2;
     function isDebug() {
@@ -18890,14 +18890,14 @@ Support boolean input list: \`true | True | TRUE | false | False | FALSE\``);
       command_1.issueCommand("debug", {}, message);
     }
     exports2.debug = debug;
-    function error2(message, properties = {}) {
+    function error(message, properties = {}) {
       command_1.issueCommand("error", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports2.error = error2;
-    function warning(message, properties = {}) {
+    exports2.error = error;
+    function warning2(message, properties = {}) {
       command_1.issueCommand("warning", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
-    exports2.warning = warning;
+    exports2.warning = warning2;
     function notice(message, properties = {}) {
       command_1.issueCommand("notice", utils_1.toCommandProperties(properties), message instanceof Error ? message.toString() : message);
     }
@@ -19736,7 +19736,7 @@ var require_toolrunner = __commonJS({
               this._debug(`STDIO streams have closed for tool '${this.toolPath}'`);
               state.CheckComplete();
             });
-            state.on("done", (error2, exitCode) => {
+            state.on("done", (error, exitCode) => {
               if (stdbuffer.length > 0) {
                 this.emit("stdline", stdbuffer);
               }
@@ -19744,8 +19744,8 @@ var require_toolrunner = __commonJS({
                 this.emit("errline", errbuffer);
               }
               cp.removeAllListeners();
-              if (error2) {
-                reject(error2);
+              if (error) {
+                reject(error);
               } else {
                 resolve(exitCode);
               }
@@ -19840,14 +19840,14 @@ var require_toolrunner = __commonJS({
         this.emit("debug", message);
       }
       _setResult() {
-        let error2;
+        let error;
         if (this.processExited) {
           if (this.processError) {
-            error2 = new Error(`There was an error when attempting to execute the process '${this.toolPath}'. This may indicate the process failed to start. Error: ${this.processError}`);
+            error = new Error(`There was an error when attempting to execute the process '${this.toolPath}'. This may indicate the process failed to start. Error: ${this.processError}`);
           } else if (this.processExitCode !== 0 && !this.options.ignoreReturnCode) {
-            error2 = new Error(`The process '${this.toolPath}' failed with exit code ${this.processExitCode}`);
+            error = new Error(`The process '${this.toolPath}' failed with exit code ${this.processExitCode}`);
           } else if (this.processStderr && this.options.failOnStdErr) {
-            error2 = new Error(`The process '${this.toolPath}' failed because one or more lines were written to the STDERR stream`);
+            error = new Error(`The process '${this.toolPath}' failed because one or more lines were written to the STDERR stream`);
           }
         }
         if (this.timeout) {
@@ -19855,7 +19855,7 @@ var require_toolrunner = __commonJS({
           this.timeout = null;
         }
         this.done = true;
-        this.emit("done", error2, this.processExitCode);
+        this.emit("done", error, this.processExitCode);
       }
       static HandleTimeout(state) {
         if (state.done) {
@@ -20205,8 +20205,8 @@ var require_add = __commonJS({
       }
       if (kind === "error") {
         hook = function(method, options) {
-          return Promise.resolve().then(method.bind(null, options)).catch(function(error2) {
-            return orig(error2, options);
+          return Promise.resolve().then(method.bind(null, options)).catch(function(error) {
+            return orig(error, options);
           });
         };
       }
@@ -20938,7 +20938,7 @@ var require_dist_node5 = __commonJS({
         }
         if (status >= 400) {
           const data = await getResponseData(response);
-          const error2 = new import_request_error.RequestError(toErrorMessage(data), status, {
+          const error = new import_request_error.RequestError(toErrorMessage(data), status, {
             response: {
               url,
               status,
@@ -20947,7 +20947,7 @@ var require_dist_node5 = __commonJS({
             },
             request: requestOptions
           });
-          throw error2;
+          throw error;
         }
         return parseSuccessResponseBody ? await getResponseData(response) : response.body;
       }).then((data) => {
@@ -20957,17 +20957,17 @@ var require_dist_node5 = __commonJS({
           headers,
           data
         };
-      }).catch((error2) => {
-        if (error2 instanceof import_request_error.RequestError)
-          throw error2;
-        else if (error2.name === "AbortError")
-          throw error2;
-        let message = error2.message;
-        if (error2.name === "TypeError" && "cause" in error2) {
-          if (error2.cause instanceof Error) {
-            message = error2.cause.message;
-          } else if (typeof error2.cause === "string") {
-            message = error2.cause;
+      }).catch((error) => {
+        if (error instanceof import_request_error.RequestError)
+          throw error;
+        else if (error.name === "AbortError")
+          throw error;
+        let message = error.message;
+        if (error.name === "TypeError" && "cause" in error) {
+          if (error.cause instanceof Error) {
+            message = error.cause.message;
+          } else if (typeof error.cause === "string") {
+            message = error.cause;
           }
         }
         throw new import_request_error.RequestError(message, 500, {
@@ -23633,9 +23633,9 @@ var require_dist_node10 = __commonJS({
                 /<([^>]+)>;\s*rel="next"/
               ) || [])[1];
               return { value: normalizedResponse };
-            } catch (error2) {
-              if (error2.status !== 409)
-                throw error2;
+            } catch (error) {
+              if (error.status !== 409)
+                throw error;
               url = "";
               return {
                 value: {
@@ -25898,10 +25898,10 @@ var require_ponyfill_es2018 = __commonJS({
         });
         return promise;
       }
-      function WritableStreamDealWithRejection(stream, error2) {
+      function WritableStreamDealWithRejection(stream, error) {
         const state = stream._state;
         if (state === "writable") {
-          WritableStreamStartErroring(stream, error2);
+          WritableStreamStartErroring(stream, error);
           return;
         }
         WritableStreamFinishErroring(stream);
@@ -25952,10 +25952,10 @@ var require_ponyfill_es2018 = __commonJS({
         stream._inFlightWriteRequest._resolve(void 0);
         stream._inFlightWriteRequest = void 0;
       }
-      function WritableStreamFinishInFlightWriteWithError(stream, error2) {
-        stream._inFlightWriteRequest._reject(error2);
+      function WritableStreamFinishInFlightWriteWithError(stream, error) {
+        stream._inFlightWriteRequest._reject(error);
         stream._inFlightWriteRequest = void 0;
-        WritableStreamDealWithRejection(stream, error2);
+        WritableStreamDealWithRejection(stream, error);
       }
       function WritableStreamFinishInFlightClose(stream) {
         stream._inFlightCloseRequest._resolve(void 0);
@@ -25974,14 +25974,14 @@ var require_ponyfill_es2018 = __commonJS({
           defaultWriterClosedPromiseResolve(writer);
         }
       }
-      function WritableStreamFinishInFlightCloseWithError(stream, error2) {
-        stream._inFlightCloseRequest._reject(error2);
+      function WritableStreamFinishInFlightCloseWithError(stream, error) {
+        stream._inFlightCloseRequest._reject(error);
         stream._inFlightCloseRequest = void 0;
         if (stream._pendingAbortRequest !== void 0) {
-          stream._pendingAbortRequest._reject(error2);
+          stream._pendingAbortRequest._reject(error);
           stream._pendingAbortRequest = void 0;
         }
-        WritableStreamDealWithRejection(stream, error2);
+        WritableStreamDealWithRejection(stream, error);
       }
       function WritableStreamCloseQueuedOrInFlight(stream) {
         if (stream._closeRequest === void 0 && stream._inFlightCloseRequest === void 0) {
@@ -26198,18 +26198,18 @@ var require_ponyfill_es2018 = __commonJS({
         }
         return WritableStreamDefaultWriterClose(writer);
       }
-      function WritableStreamDefaultWriterEnsureClosedPromiseRejected(writer, error2) {
+      function WritableStreamDefaultWriterEnsureClosedPromiseRejected(writer, error) {
         if (writer._closedPromiseState === "pending") {
-          defaultWriterClosedPromiseReject(writer, error2);
+          defaultWriterClosedPromiseReject(writer, error);
         } else {
-          defaultWriterClosedPromiseResetToRejected(writer, error2);
+          defaultWriterClosedPromiseResetToRejected(writer, error);
         }
       }
-      function WritableStreamDefaultWriterEnsureReadyPromiseRejected(writer, error2) {
+      function WritableStreamDefaultWriterEnsureReadyPromiseRejected(writer, error) {
         if (writer._readyPromiseState === "pending") {
-          defaultWriterReadyPromiseReject(writer, error2);
+          defaultWriterReadyPromiseReject(writer, error);
         } else {
-          defaultWriterReadyPromiseResetToRejected(writer, error2);
+          defaultWriterReadyPromiseResetToRejected(writer, error);
         }
       }
       function WritableStreamDefaultWriterGetDesiredSize(writer) {
@@ -26444,9 +26444,9 @@ var require_ponyfill_es2018 = __commonJS({
           WritableStreamDefaultControllerProcessWrite(controller, value);
         }
       }
-      function WritableStreamDefaultControllerErrorIfNeeded(controller, error2) {
+      function WritableStreamDefaultControllerErrorIfNeeded(controller, error) {
         if (controller._controlledWritableStream._state === "writable") {
-          WritableStreamDefaultControllerError(controller, error2);
+          WritableStreamDefaultControllerError(controller, error);
         }
       }
       function WritableStreamDefaultControllerProcessClose(controller) {
@@ -26489,10 +26489,10 @@ var require_ponyfill_es2018 = __commonJS({
         const desiredSize = WritableStreamDefaultControllerGetDesiredSize(controller);
         return desiredSize <= 0;
       }
-      function WritableStreamDefaultControllerError(controller, error2) {
+      function WritableStreamDefaultControllerError(controller, error) {
         const stream = controller._controlledWritableStream;
         WritableStreamDefaultControllerClearAlgorithms(controller);
-        WritableStreamStartErroring(stream, error2);
+        WritableStreamStartErroring(stream, error);
       }
       function streamBrandCheckException$2(name) {
         return new TypeError(`WritableStream.prototype.${name} can only be used on a WritableStream`);
@@ -26636,12 +26636,12 @@ var require_ponyfill_es2018 = __commonJS({
           let abortAlgorithm;
           if (signal !== void 0) {
             abortAlgorithm = () => {
-              const error2 = signal.reason !== void 0 ? signal.reason : new DOMException3("Aborted", "AbortError");
+              const error = signal.reason !== void 0 ? signal.reason : new DOMException3("Aborted", "AbortError");
               const actions = [];
               if (!preventAbort) {
                 actions.push(() => {
                   if (dest._state === "writable") {
-                    return WritableStreamAbort(dest, error2);
+                    return WritableStreamAbort(dest, error);
                   }
                   return promiseResolvedWith(void 0);
                 });
@@ -26649,12 +26649,12 @@ var require_ponyfill_es2018 = __commonJS({
               if (!preventCancel) {
                 actions.push(() => {
                   if (source._state === "readable") {
-                    return ReadableStreamCancel(source, error2);
+                    return ReadableStreamCancel(source, error);
                   }
                   return promiseResolvedWith(void 0);
                 });
               }
-              shutdownWithAction(() => Promise.all(actions.map((action) => action())), true, error2);
+              shutdownWithAction(() => Promise.all(actions.map((action) => action())), true, error);
             };
             if (signal.aborted) {
               abortAlgorithm();
@@ -26757,25 +26757,25 @@ var require_ponyfill_es2018 = __commonJS({
               return null;
             }
           }
-          function shutdown(isError, error2) {
+          function shutdown(isError, error) {
             if (shuttingDown) {
               return;
             }
             shuttingDown = true;
             if (dest._state === "writable" && !WritableStreamCloseQueuedOrInFlight(dest)) {
-              uponFulfillment(waitForWritesToFinish(), () => finalize(isError, error2));
+              uponFulfillment(waitForWritesToFinish(), () => finalize(isError, error));
             } else {
-              finalize(isError, error2);
+              finalize(isError, error);
             }
           }
-          function finalize(isError, error2) {
+          function finalize(isError, error) {
             WritableStreamDefaultWriterRelease(writer);
             ReadableStreamReaderGenericRelease(reader);
             if (signal !== void 0) {
               signal.removeEventListener("abort", abortAlgorithm);
             }
             if (isError) {
-              reject(error2);
+              reject(error);
             } else {
               resolve(void 0);
             }
@@ -28170,8 +28170,8 @@ var require_ponyfill_es2018 = __commonJS({
         const stream = controller._controlledTransformStream;
         const readableController = stream._readable._readableStreamController;
         ReadableStreamDefaultControllerClose(readableController);
-        const error2 = new TypeError("TransformStream terminated");
-        TransformStreamErrorWritableAndUnblockWrite(stream, error2);
+        const error = new TypeError("TransformStream terminated");
+        TransformStreamErrorWritableAndUnblockWrite(stream, error);
       }
       function TransformStreamDefaultSinkWriteAlgorithm(stream, chunk) {
         const controller = stream._transformStreamController;
@@ -28328,11 +28328,11 @@ var require_streams = __commonJS({
           };
           Object.assign(globalThis, require("node:stream/web"));
           process2.emitWarning = emitWarning;
-        } catch (error2) {
+        } catch (error) {
           process2.emitWarning = emitWarning;
-          throw error2;
+          throw error;
         }
-      } catch (error2) {
+      } catch (error) {
         Object.assign(globalThis, require_ponyfill_es2018());
       }
     }
@@ -28356,7 +28356,7 @@ var require_streams = __commonJS({
           });
         };
       }
-    } catch (error2) {
+    } catch (error) {
     }
   }
 });
@@ -29980,26 +29980,26 @@ var require_receiver2 = __commonJS({
         }
         const buf = this.consume(2);
         if ((buf[0] & 48) !== 0) {
-          const error2 = this.createError(
+          const error = this.createError(
             RangeError,
             "RSV2 and RSV3 must be clear",
             true,
             1002,
             "WS_ERR_UNEXPECTED_RSV_2_3"
           );
-          cb(error2);
+          cb(error);
           return;
         }
         const compressed = (buf[0] & 64) === 64;
         if (compressed && !this._extensions[PerMessageDeflate.extensionName]) {
-          const error2 = this.createError(
+          const error = this.createError(
             RangeError,
             "RSV1 must be clear",
             true,
             1002,
             "WS_ERR_UNEXPECTED_RSV_1"
           );
-          cb(error2);
+          cb(error);
           return;
         }
         this._fin = (buf[0] & 128) === 128;
@@ -30007,109 +30007,109 @@ var require_receiver2 = __commonJS({
         this._payloadLength = buf[1] & 127;
         if (this._opcode === 0) {
           if (compressed) {
-            const error2 = this.createError(
+            const error = this.createError(
               RangeError,
               "RSV1 must be clear",
               true,
               1002,
               "WS_ERR_UNEXPECTED_RSV_1"
             );
-            cb(error2);
+            cb(error);
             return;
           }
           if (!this._fragmented) {
-            const error2 = this.createError(
+            const error = this.createError(
               RangeError,
               "invalid opcode 0",
               true,
               1002,
               "WS_ERR_INVALID_OPCODE"
             );
-            cb(error2);
+            cb(error);
             return;
           }
           this._opcode = this._fragmented;
         } else if (this._opcode === 1 || this._opcode === 2) {
           if (this._fragmented) {
-            const error2 = this.createError(
+            const error = this.createError(
               RangeError,
               `invalid opcode ${this._opcode}`,
               true,
               1002,
               "WS_ERR_INVALID_OPCODE"
             );
-            cb(error2);
+            cb(error);
             return;
           }
           this._compressed = compressed;
         } else if (this._opcode > 7 && this._opcode < 11) {
           if (!this._fin) {
-            const error2 = this.createError(
+            const error = this.createError(
               RangeError,
               "FIN must be set",
               true,
               1002,
               "WS_ERR_EXPECTED_FIN"
             );
-            cb(error2);
+            cb(error);
             return;
           }
           if (compressed) {
-            const error2 = this.createError(
+            const error = this.createError(
               RangeError,
               "RSV1 must be clear",
               true,
               1002,
               "WS_ERR_UNEXPECTED_RSV_1"
             );
-            cb(error2);
+            cb(error);
             return;
           }
           if (this._payloadLength > 125 || this._opcode === 8 && this._payloadLength === 1) {
-            const error2 = this.createError(
+            const error = this.createError(
               RangeError,
               `invalid payload length ${this._payloadLength}`,
               true,
               1002,
               "WS_ERR_INVALID_CONTROL_PAYLOAD_LENGTH"
             );
-            cb(error2);
+            cb(error);
             return;
           }
         } else {
-          const error2 = this.createError(
+          const error = this.createError(
             RangeError,
             `invalid opcode ${this._opcode}`,
             true,
             1002,
             "WS_ERR_INVALID_OPCODE"
           );
-          cb(error2);
+          cb(error);
           return;
         }
         if (!this._fin && !this._fragmented) this._fragmented = this._opcode;
         this._masked = (buf[1] & 128) === 128;
         if (this._isServer) {
           if (!this._masked) {
-            const error2 = this.createError(
+            const error = this.createError(
               RangeError,
               "MASK must be set",
               true,
               1002,
               "WS_ERR_EXPECTED_MASK"
             );
-            cb(error2);
+            cb(error);
             return;
           }
         } else if (this._masked) {
-          const error2 = this.createError(
+          const error = this.createError(
             RangeError,
             "MASK must be clear",
             true,
             1002,
             "WS_ERR_UNEXPECTED_MASK"
           );
-          cb(error2);
+          cb(error);
           return;
         }
         if (this._payloadLength === 126) this._state = GET_PAYLOAD_LENGTH_16;
@@ -30144,14 +30144,14 @@ var require_receiver2 = __commonJS({
         const buf = this.consume(8);
         const num = buf.readUInt32BE(0);
         if (num > Math.pow(2, 53 - 32) - 1) {
-          const error2 = this.createError(
+          const error = this.createError(
             RangeError,
             "Unsupported WebSocket frame: payload length > 2^53 - 1",
             false,
             1009,
             "WS_ERR_UNSUPPORTED_DATA_PAYLOAD_LENGTH"
           );
-          cb(error2);
+          cb(error);
           return;
         }
         this._payloadLength = num * Math.pow(2, 32) + buf.readUInt32BE(4);
@@ -30167,14 +30167,14 @@ var require_receiver2 = __commonJS({
         if (this._payloadLength && this._opcode < 8) {
           this._totalPayloadLength += this._payloadLength;
           if (this._totalPayloadLength > this._maxPayload && this._maxPayload > 0) {
-            const error2 = this.createError(
+            const error = this.createError(
               RangeError,
               "Max payload size exceeded",
               false,
               1009,
               "WS_ERR_UNSUPPORTED_MESSAGE_LENGTH"
             );
-            cb(error2);
+            cb(error);
             return;
           }
         }
@@ -30241,14 +30241,14 @@ var require_receiver2 = __commonJS({
           if (buf.length) {
             this._messageLength += buf.length;
             if (this._messageLength > this._maxPayload && this._maxPayload > 0) {
-              const error2 = this.createError(
+              const error = this.createError(
                 RangeError,
                 "Max payload size exceeded",
                 false,
                 1009,
                 "WS_ERR_UNSUPPORTED_MESSAGE_LENGTH"
               );
-              cb(error2);
+              cb(error);
               return;
             }
             this._fragments.push(buf);
@@ -30299,14 +30299,14 @@ var require_receiver2 = __commonJS({
         } else {
           const buf = concat(fragments, messageLength);
           if (!this._skipUTF8Validation && !isValidUTF8(buf)) {
-            const error2 = this.createError(
+            const error = this.createError(
               Error,
               "invalid UTF-8 sequence",
               true,
               1007,
               "WS_ERR_INVALID_UTF8"
             );
-            cb(error2);
+            cb(error);
             return;
           }
           if (this._state === INFLATING || this._allowSynchronousEvents) {
@@ -30338,14 +30338,14 @@ var require_receiver2 = __commonJS({
           } else {
             const code = data.readUInt16BE(0);
             if (!isValidStatusCode(code)) {
-              const error2 = this.createError(
+              const error = this.createError(
                 RangeError,
                 `invalid status code ${code}`,
                 true,
                 1002,
                 "WS_ERR_INVALID_CLOSE_CODE"
               );
-              cb(error2);
+              cb(error);
               return;
             }
             const buf = new FastBuffer(
@@ -30354,14 +30354,14 @@ var require_receiver2 = __commonJS({
               data.length - 2
             );
             if (!this._skipUTF8Validation && !isValidUTF8(buf)) {
-              const error2 = this.createError(
+              const error = this.createError(
                 Error,
                 "invalid UTF-8 sequence",
                 true,
                 1007,
                 "WS_ERR_INVALID_UTF8"
               );
-              cb(error2);
+              cb(error);
               return;
             }
             this._loop = false;
@@ -31070,10 +31070,10 @@ var require_event_target = __commonJS({
             callListener(handler, this, event);
           };
         } else if (type === "error") {
-          wrapper = function onError(error2) {
+          wrapper = function onError(error) {
             const event = new ErrorEvent("error", {
-              error: error2,
-              message: error2.message
+              error,
+              message: error.message
             });
             event[kTarget] = this;
             callListener(handler, this, event);
@@ -32197,7 +32197,7 @@ var require_stream = __commonJS({
         const data = !isBinary && duplex._readableState.objectMode ? msg.toString() : msg;
         if (!duplex.push(data)) ws.pause();
       });
-      ws.once("error", function error2(err2) {
+      ws.once("error", function error(err2) {
         if (duplex.destroyed) return;
         terminateOnDestroy = false;
         duplex.destroy(err2);
@@ -32213,7 +32213,7 @@ var require_stream = __commonJS({
           return;
         }
         let called = false;
-        ws.once("error", function error2(err3) {
+        ws.once("error", function error(err3) {
           called = true;
           callback(err3);
         });
@@ -34827,8 +34827,8 @@ var Body = class {
     this.size = size;
     if (body instanceof import_node_stream2.default) {
       body.on("error", (error_) => {
-        const error2 = error_ instanceof FetchBaseError ? error_ : new FetchError(`Invalid response body while trying to fetch ${this.url}: ${error_.message}`, "system", error_);
-        this[INTERNALS].error = error2;
+        const error = error_ instanceof FetchBaseError ? error_ : new FetchError(`Invalid response body while trying to fetch ${this.url}: ${error_.message}`, "system", error_);
+        this[INTERNALS].error = error;
       });
     }
   }
@@ -34934,15 +34934,15 @@ async function consumeBody(data) {
   try {
     for await (const chunk of body) {
       if (data.size > 0 && accumBytes + chunk.length > data.size) {
-        const error2 = new FetchError(`content size at ${data.url} over limit: ${data.size}`, "max-size");
-        body.destroy(error2);
-        throw error2;
+        const error = new FetchError(`content size at ${data.url} over limit: ${data.size}`, "max-size");
+        body.destroy(error);
+        throw error;
       }
       accumBytes += chunk.length;
       accum.push(chunk);
     }
-  } catch (error2) {
-    const error_ = error2 instanceof FetchBaseError ? error2 : new FetchError(`Invalid response body while trying to fetch ${data.url}: ${error2.message}`, "system", error2);
+  } catch (error) {
+    const error_ = error instanceof FetchBaseError ? error : new FetchError(`Invalid response body while trying to fetch ${data.url}: ${error.message}`, "system", error);
     throw error_;
   }
   if (body.readableEnded === true || body._readableState.ended === true) {
@@ -34951,8 +34951,8 @@ async function consumeBody(data) {
         return import_node_buffer2.Buffer.from(accum.join(""));
       }
       return import_node_buffer2.Buffer.concat(accum, accumBytes);
-    } catch (error2) {
-      throw new FetchError(`Could not create Buffer from response body for ${data.url}: ${error2.message}`, "system", error2);
+    } catch (error) {
+      throw new FetchError(`Could not create Buffer from response body for ${data.url}: ${error.message}`, "system", error);
     }
   } else {
     throw new FetchError(`Premature close of server response while trying to fetch ${data.url}`);
@@ -35036,16 +35036,16 @@ var import_node_util3 = require("node:util");
 var import_node_http = __toESM(require("node:http"), 1);
 var validateHeaderName = typeof import_node_http.default.validateHeaderName === "function" ? import_node_http.default.validateHeaderName : (name) => {
   if (!/^[\^`\-\w!#$%&'*+.|~]+$/.test(name)) {
-    const error2 = new TypeError(`Header name must be a valid HTTP token [${name}]`);
-    Object.defineProperty(error2, "code", { value: "ERR_INVALID_HTTP_TOKEN" });
-    throw error2;
+    const error = new TypeError(`Header name must be a valid HTTP token [${name}]`);
+    Object.defineProperty(error, "code", { value: "ERR_INVALID_HTTP_TOKEN" });
+    throw error;
   }
 };
 var validateHeaderValue = typeof import_node_http.default.validateHeaderValue === "function" ? import_node_http.default.validateHeaderValue : (name, value) => {
   if (/[^\t\u0020-\u007E\u0080-\u00FF]/.test(value)) {
-    const error2 = new TypeError(`Invalid character in header content ["${name}"]`);
-    Object.defineProperty(error2, "code", { value: "ERR_INVALID_CHAR" });
-    throw error2;
+    const error = new TypeError(`Invalid character in header content ["${name}"]`);
+    Object.defineProperty(error, "code", { value: "ERR_INVALID_CHAR" });
+    throw error;
   }
 };
 var Headers = class _Headers extends URLSearchParams {
@@ -35716,15 +35716,15 @@ async function fetch2(url, options_) {
     const { signal } = request;
     let response = null;
     const abort = () => {
-      const error2 = new AbortError("The operation was aborted.");
-      reject(error2);
+      const error = new AbortError("The operation was aborted.");
+      reject(error);
       if (request.body && request.body instanceof import_node_stream3.default.Readable) {
-        request.body.destroy(error2);
+        request.body.destroy(error);
       }
       if (!response || !response.body) {
         return;
       }
-      response.body.emit("error", error2);
+      response.body.emit("error", error);
     };
     if (signal && signal.aborted) {
       abort();
@@ -35744,13 +35744,13 @@ async function fetch2(url, options_) {
         signal.removeEventListener("abort", abortAndFinalize);
       }
     };
-    request_.on("error", (error2) => {
-      reject(new FetchError(`request to ${request.url} failed, reason: ${error2.message}`, "system", error2));
+    request_.on("error", (error) => {
+      reject(new FetchError(`request to ${request.url} failed, reason: ${error.message}`, "system", error));
       finalize();
     });
-    fixResponseChunkedTransferBadEnding(request_, (error2) => {
+    fixResponseChunkedTransferBadEnding(request_, (error) => {
       if (response && response.body) {
-        response.body.destroy(error2);
+        response.body.destroy(error);
       }
     });
     if (process.version < "v14") {
@@ -35761,9 +35761,9 @@ async function fetch2(url, options_) {
         });
         s2.prependListener("close", (hadError) => {
           if (response && endedWithEventsCount < s2._eventsCount && !hadError) {
-            const error2 = new Error("Premature close");
-            error2.code = "ERR_STREAM_PREMATURE_CLOSE";
-            response.body.emit("error", error2);
+            const error = new Error("Premature close");
+            error.code = "ERR_STREAM_PREMATURE_CLOSE";
+            response.body.emit("error", error);
           }
         });
       });
@@ -35844,9 +35844,9 @@ async function fetch2(url, options_) {
           signal.removeEventListener("abort", abortAndFinalize);
         });
       }
-      let body = (0, import_node_stream3.pipeline)(response_, new import_node_stream3.PassThrough(), (error2) => {
-        if (error2) {
-          reject(error2);
+      let body = (0, import_node_stream3.pipeline)(response_, new import_node_stream3.PassThrough(), (error) => {
+        if (error) {
+          reject(error);
         }
       });
       if (process.version < "v12.10") {
@@ -35872,9 +35872,9 @@ async function fetch2(url, options_) {
         finishFlush: import_node_zlib2.default.Z_SYNC_FLUSH
       };
       if (codings === "gzip" || codings === "x-gzip") {
-        body = (0, import_node_stream3.pipeline)(body, import_node_zlib2.default.createGunzip(zlibOptions), (error2) => {
-          if (error2) {
-            reject(error2);
+        body = (0, import_node_stream3.pipeline)(body, import_node_zlib2.default.createGunzip(zlibOptions), (error) => {
+          if (error) {
+            reject(error);
           }
         });
         response = new Response(body, responseOptions);
@@ -35882,22 +35882,22 @@ async function fetch2(url, options_) {
         return;
       }
       if (codings === "deflate" || codings === "x-deflate") {
-        const raw = (0, import_node_stream3.pipeline)(response_, new import_node_stream3.PassThrough(), (error2) => {
-          if (error2) {
-            reject(error2);
+        const raw = (0, import_node_stream3.pipeline)(response_, new import_node_stream3.PassThrough(), (error) => {
+          if (error) {
+            reject(error);
           }
         });
         raw.once("data", (chunk) => {
           if ((chunk[0] & 15) === 8) {
-            body = (0, import_node_stream3.pipeline)(body, import_node_zlib2.default.createInflate(), (error2) => {
-              if (error2) {
-                reject(error2);
+            body = (0, import_node_stream3.pipeline)(body, import_node_zlib2.default.createInflate(), (error) => {
+              if (error) {
+                reject(error);
               }
             });
           } else {
-            body = (0, import_node_stream3.pipeline)(body, import_node_zlib2.default.createInflateRaw(), (error2) => {
-              if (error2) {
-                reject(error2);
+            body = (0, import_node_stream3.pipeline)(body, import_node_zlib2.default.createInflateRaw(), (error) => {
+              if (error) {
+                reject(error);
               }
             });
           }
@@ -35913,9 +35913,9 @@ async function fetch2(url, options_) {
         return;
       }
       if (codings === "br") {
-        body = (0, import_node_stream3.pipeline)(body, import_node_zlib2.default.createBrotliDecompress(), (error2) => {
-          if (error2) {
-            reject(error2);
+        body = (0, import_node_stream3.pipeline)(body, import_node_zlib2.default.createBrotliDecompress(), (error) => {
+          if (error) {
+            reject(error);
           }
         });
         response = new Response(body, responseOptions);
@@ -35940,9 +35940,9 @@ function fixResponseChunkedTransferBadEnding(request, errorCallback) {
   request.on("socket", (socket) => {
     const onSocketClose = () => {
       if (isChunkedTransfer && !properLastChunkReceived) {
-        const error2 = new Error("Premature close");
-        error2.code = "ERR_STREAM_PREMATURE_CLOSE";
-        errorCallback(error2);
+        const error = new Error("Premature close");
+        error.code = "ERR_STREAM_PREMATURE_CLOSE";
+        errorCallback(error);
       }
     };
     const onData = (buf) => {
@@ -36223,11 +36223,11 @@ var convertDataToBasedError = (payload, stack) => {
   }
   const { message, code } = payload;
   const msg = message ? message[0] === "[" ? message : `[${BasedErrorCode[code]}] ` + message : !code ? JSON.stringify(payload, null, 2) : "Cannot read error msg";
-  const error2 = new BasedError(msg);
-  error2.stack = stack ? msg + " " + stack : msg;
-  error2.name = BasedErrorCode[code];
-  error2.code = code;
-  return error2;
+  const error = new BasedError(msg);
+  error.stack = stack ? msg + " " + stack : msg;
+  error.name = BasedErrorCode[code];
+  error.code = code;
+  return error;
 };
 
 // node_modules/@based/client/dist/src/incoming/forceReload.js
@@ -36426,13 +36426,13 @@ var incoming = async (client, data) => {
       }
       if (payload.channelId) {
         if (client.channelState.has(payload.channelId)) {
-          const error2 = convertDataToBasedError(payload);
+          const error = convertDataToBasedError(payload);
           const channel = client.channelState.get(payload.channelId);
           for (const [, handlers] of channel.subscribers) {
             if (handlers.onError) {
-              handlers.onError(error2);
+              handlers.onError(error);
             } else {
-              console.error(getTargetInfo(client, payload.channelId, "channel"), error2);
+              console.error(getTargetInfo(client, payload.channelId, "channel"), error);
             }
           }
         }
@@ -36440,21 +36440,21 @@ var incoming = async (client, data) => {
       if (payload.observableId) {
         client.cache.delete(payload.observableId);
         if (client.observeState.has(payload.observableId)) {
-          const error2 = convertDataToBasedError(payload);
+          const error = convertDataToBasedError(payload);
           const observable = client.observeState.get(payload.observableId);
           for (const [, handlers] of observable.subscribers) {
             if (handlers.onError) {
-              handlers.onError(error2);
+              handlers.onError(error);
             } else {
-              console.error(getTargetInfo(client, payload.observableId, "sub"), error2);
+              console.error(getTargetInfo(client, payload.observableId, "sub"), error);
             }
           }
         }
         if (client.getState.has(payload.observableId)) {
-          const error2 = convertDataToBasedError(payload);
+          const error = convertDataToBasedError(payload);
           const get = client.getState.get(payload.observableId);
           for (const [, reject] of get) {
-            reject(error2);
+            reject(error);
           }
           client.getState.delete(payload.observableId);
         }
@@ -37777,9 +37777,9 @@ async function run() {
         userId
       });
       core.info("\u2705 Based AuthState set");
-    } catch (error2) {
+    } catch (error) {
       throw new Error(
-        `Was not possible to log in using your credentials. Error: ${error2.message}`
+        `Was not possible to log in using your credentials. Error: ${error.message}`
       );
     }
     if (env === "#branch") {
@@ -37796,16 +37796,16 @@ async function run() {
         core.info("\u2705 Waiting for the creation of the environment...");
         await wait_default(3e4);
         core.info("\u2705 Environment created successfully.");
-      } catch (error2) {
-        core.error(`\u{1F9E8} Error managing the environment: ${error2.message}`);
+      } catch (error) {
+        core.warning(error.message);
       }
     }
     core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");
     await exec.exec("npx --yes @based/cli deploy", ["--api-key", token]);
     core.info("\u{1F389} Success! Enjoy your fastest deploy ever!");
     process.exit();
-  } catch (error2) {
-    core.setFailed(`\u{1F9E8} Error deploying your repo: ${error2.message}`);
+  } catch (error) {
+    core.setFailed(`\u{1F9E8} Error deploying your repo: ${error.message}`);
   }
 }
 run();

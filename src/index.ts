@@ -88,7 +88,7 @@ async function run() {
         await wait(30000)
         core.info('✅ Environment created successfully.')
       } catch (error) {
-        core.error(`🧨 Error managing the environment: ${error.message}`)
+        core.warning(error.message)
       }
     }
 

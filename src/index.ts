@@ -76,7 +76,7 @@ async function run() {
 
       const data = client.query('env', { org, project, env })
 
-      core.info(`env info ${data}`)
+      core.info(`env info ${JSON.stringify(data)}`)
 
       try {
         await client.call('create-env', {

@@ -37785,7 +37785,7 @@ async function run() {
     if (env === "#branch") {
       core.info(`\u{1F558} Checking if the environment '${branchName}' already exists. If doesn't, it'll be created.`);
       const data = client.query("env", { org, project, env });
-      core.info(`env info ${data}`);
+      core.info(`env info ${JSON.stringify(data)}`);
       try {
         await client.call("create-env", {
           org,

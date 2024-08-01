@@ -74,7 +74,7 @@ async function run() {
     if (env === '#branch') {
       core.info(`🕘 Checking if the environment '${branchName}' already exists. If doesn't, it'll be created.`)
 
-      const data = client.query('env', { org, project, env })
+      const data = client.query('env', { org, project, env: branchName }).get()
 
       core.info(`env info ${JSON.stringify(data)}`)
 

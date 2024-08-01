@@ -37741,7 +37741,7 @@ async function run() {
     const token = core.getInput("apiKey");
     const size = core.getInput("size") ?? "small";
     const region = core.getInput("region") ?? "eu-central-1";
-    const branchName = github.context.ref.replace("refs/heads/", "");
+    const branchName = github.context?.ref?.replace("refs/heads/", "");
     if (!userId || !token) {
       throw new Error(
         "You need to set the userID and the apiKey as input to the function to deploy your files."

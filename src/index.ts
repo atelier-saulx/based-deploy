@@ -17,7 +17,7 @@ async function run() {
     const size = core.getInput('size') ?? 'small'
     const region = core.getInput('region') ?? 'eu-central-1'
     // const repository = github.context.repo.repo
-    const branchName = github.context.ref.replace('refs/heads/', '')
+    const branchName = github.context?.ref?.replace('refs/heads/', '')
     // const branchUrl = `https://github.com/${github.context.repo.owner}/${repository}/tree/${branchName}`
 
     if (!userId || !token) {

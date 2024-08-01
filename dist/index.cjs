@@ -37802,7 +37802,6 @@ async function run() {
       );
     }
     const isEnvFound = await getEnvByName(client, org, project, env);
-    core.info(`isToCreateEnv ${isToCreateEnv} - action ${action}`);
     if (!isToCreateEnv) {
       if (!isEnvFound) {
         throw new Error("Is not possible to delete an environment that doesn't exist.");

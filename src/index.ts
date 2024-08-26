@@ -4,7 +4,6 @@ import * as github from '@actions/github'
 import { BasedClient } from '@based/client'
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
-import { wait } from '@saulx/utils'
 
 const getEnvByName = async (client: BasedClient, org: string, project: string, env: string) => {
   try {

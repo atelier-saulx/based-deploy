@@ -32746,11 +32746,6 @@ var deepCopy = (a2) => {
 };
 var deepCopy_default = deepCopy;
 
-// node_modules/@saulx/utils/dist/src/wait.js
-var wait_default = (ms = 100) => new Promise((resolve) => {
-  setTimeout(() => resolve(), ms);
-});
-
 // node_modules/@saulx/utils/dist/src/deepEqual.js
 var deepEqual = (a2, b2) => {
   const typeA = typeof a2;
@@ -37822,6 +37817,7 @@ async function run() {
     if (isToCreateEnv && !isEnvFound) {
       try {
         core.info("\u{1F558} Trying to create a new environment.");
+        core.info("\u2705 Waiting for the creation of the environment...");
         await client.call("create-env", {
           org,
           project,
@@ -37829,8 +37825,6 @@ async function run() {
           config: size,
           region
         });
-        core.info("\u2705 Waiting for the creation of the environment...");
-        await wait_default(35e3);
         core.info("\u2705 Environment created successfully.");
       } catch (error) {
         throw new Error(`Error creating the environment: ${error.message}`);

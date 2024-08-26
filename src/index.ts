@@ -120,6 +120,7 @@ async function run() {
     if (isToCreateEnv && !isEnvFound) {
       try {
         core.info('🕘 Trying to create a new environment.')
+        core.info('✅ Waiting for the creation of the environment...')
 
         await client.call('create-env', {
           org,
@@ -129,8 +130,6 @@ async function run() {
           region,
         })
 
-        core.info('✅ Waiting for the creation of the environment...')
-        await wait(35000)
         core.info('✅ Environment created successfully.')
       } catch (error) {
         throw new Error(`Error creating the environment: ${error.message}`)

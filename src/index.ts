@@ -4,6 +4,7 @@ import * as github from '@actions/github'
 import { BasedClient } from '@based/client'
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
+import {wait} from "@saulx/utils";
 
 const getEnvByName = async (client: BasedClient, org: string, project: string, env: string) => {
   try {
@@ -128,6 +129,8 @@ async function run() {
           config: size,
           region,
         })
+
+        await wait(10000)
 
         core.info('✅ Environment created successfully.')
       } catch (error) {

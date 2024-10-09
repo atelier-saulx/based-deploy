@@ -4,9 +4,14 @@ import * as github from '@actions/github'
 import { BasedClient } from '@based/client'
 import { readFileSync, existsSync } from 'fs'
 import { join } from 'path'
-import {wait} from "@saulx/utils";
+import { wait } from '@saulx/utils'
 
-const getEnvByName = async (client: BasedClient, org: string, project: string, env: string) => {
+const getEnvByName = async (
+  client: BasedClient,
+  org: string,
+  project: string,
+  env: string,
+) => {
   try {
     core.info(`🕘 Checking if the environment '${env}' exists.`)
 
@@ -38,7 +43,9 @@ async function run() {
     const region = core.getInput('region') || 'eu-central-1'
     const action = core.getInput('action') || 'create-env'
     const isToCreateEnv = action === 'create-env'
-    const branchName = isToCreateEnv ? github.context?.ref?.replace('refs/heads/', '') : github.context?.payload?.ref
+    const branchName = isToCreateEnv
+      ? github.context?.ref?.replace('refs/heads/', '')
+      : github.context?.payload?.ref
 
     if (!userId || !token) {
       throw new Error(
@@ -97,7 +104,9 @@ async function run() {
 
     if (!isToCreateEnv) {
       if (!isEnvFound) {
-        throw new Error("Is not possible to delete an environment that doesn't exist.")
+        throw new Error(
+          "Is not possible to delete an environment that doesn't exist.",
+        )
       }
 
       core.info('🕘 Trying to delete the environment...')

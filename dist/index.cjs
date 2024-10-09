@@ -32746,6 +32746,11 @@ var deepCopy = (a2) => {
 };
 var deepCopy_default = deepCopy;
 
+// node_modules/@saulx/utils/dist/src/wait.js
+var wait_default = (ms = 100) => new Promise((resolve) => {
+  setTimeout(() => resolve(), ms);
+});
+
 // node_modules/@saulx/utils/dist/src/deepEqual.js
 var deepEqual = (a2, b2) => {
   const typeA = typeof a2;
@@ -37799,7 +37804,9 @@ async function run() {
     const isEnvFound = await getEnvByName(client, org, project, env);
     if (!isToCreateEnv) {
       if (!isEnvFound) {
-        throw new Error("Is not possible to delete an environment that doesn't exist.");
+        throw new Error(
+          "Is not possible to delete an environment that doesn't exist."
+        );
       }
       core.info("\u{1F558} Trying to delete the environment...");
       try {
@@ -37825,6 +37832,7 @@ async function run() {
           config: size,
           region
         });
+        await wait_default(1e4);
         core.info("\u2705 Environment created successfully.");
       } catch (error) {
         throw new Error(`Error creating the environment: ${error.message}`);

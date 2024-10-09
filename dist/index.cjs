@@ -37832,7 +37832,7 @@ async function run() {
           config: size,
           region
         });
-        await wait_default(1e4);
+        await wait_default(35e3);
         core.info("\u2705 Environment created successfully.");
       } catch (error) {
         throw new Error(`Error creating the environment: ${error.message}`);

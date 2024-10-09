@@ -139,7 +139,7 @@ async function run() {
           region,
         })
 
-        await wait(10000)
+        await wait(35000)
 
         core.info('✅ Environment created successfully.')
       } catch (error) {

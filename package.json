@@ -21,6 +21,7 @@
     "@actions/github": "^6.0.0",
     "@based/bundle": "../bundle",
     "@based/client": "^6.9.1",
+    "@parcel/watcher": "^2.4.1",
     "@saulx/utils": "^5.0.0",
     "esbuild": "^0.23.1",
     "find-up": "^7.0.0"

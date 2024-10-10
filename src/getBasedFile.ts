@@ -21,8 +21,10 @@ export const getBasedFile = async (file: string[]): Promise<Project | null> => {
 
   if (basedFile) {
     if (basedFile.endsWith('.json')) {
+      console.log('É JSON')
       basedFileContent = await readJSON(basedFile)
     } else {
+      console.log('NÃO É JSON')
       const bundled = await bundle({
         entryPoints: [basedFile],
       })

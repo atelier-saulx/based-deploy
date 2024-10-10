@@ -37748,7 +37748,7 @@ var getEnvByName = async (client, org, project, env) => {
 };
 var deploy = async (token) => {
   core.info("\u2601\uFE0F Starting the Deploy using the Based CLI...");
-  await exec.exec("npx --yes @based/cli deploy", ["--api-key", token]);
+  await exec.exec("npx --yes @based/cli@latest deploy", ["--api-key", token]);
   core.info("\u{1F389} Success! Enjoy your fastest deploy ever!");
 };
 async function run() {

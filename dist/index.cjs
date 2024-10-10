@@ -37781,7 +37781,7 @@ async function run() {
       );
     }
     core.info('\u2705 Parsed "based.json"');
-    env = env === "#branch" ? branchName : env;
+    env = env.endsWith("#branch") ? branchName : env;
     const client = new BasedClient({
       org: "saulx",
       project: "based-cloud",

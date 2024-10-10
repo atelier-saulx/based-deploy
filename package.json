@@ -20,7 +20,9 @@
     "@actions/exec": "^1.1.1",
     "@actions/github": "^6.0.0",
     "@based/client": "^6.9.1",
-    "@saulx/utils": "^5.0.0"
+    "@saulx/utils": "^5.0.0",
+    "find-up": "^7.0.0",
+    "@based/bundle": "../bundle"
   },
   "devDependencies": {
     "@based/cli": "^7.2.3",

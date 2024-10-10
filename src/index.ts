@@ -30,7 +30,7 @@ const getEnvByName = async (
 const deploy = async (token: string) => {
   core.info('☁️ Starting the Deploy using the Based CLI...')
 
-  await exec.exec('npx --yes @based/cli deploy', ['--api-key', token])
+  await exec.exec('npx --yes @based/cli@latest deploy', ['--api-key', token])
 
   core.info('🎉 Success! Enjoy your fastest deploy ever!')
 }

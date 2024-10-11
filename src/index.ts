@@ -54,7 +54,7 @@ async function run() {
 
     core.info('✅ UserID and APIKey')
 
-    let basedJson: Project = {}
+    let basedJson: Project | undefined = {}
 
     try {
       basedJson = await getBasedFile(['based.json', 'based.js', 'based.ts'])
@@ -66,7 +66,7 @@ async function run() {
       )
     }
 
-    let { org, project, env } = basedJson
+    let { org, project, env } = basedJson!
 
     if (!org || !project || !env) {
       throw new Error(

@@ -84,13 +84,6 @@ async function run() {
     const isAClonedEnv = envInfo.length === 2 && envInfo[1] === '#branch'
     const cloneEnvFrom = envInfo.length === 2 ? envInfo[0] : ''
 
-    console.log('env', env)
-    console.log('originalEnv', originalEnv)
-    console.log('envInfo', envInfo)
-    console.log('isCleanEnvironment', isCleanEnvironment)
-    console.log('isAClonedEnv', isAClonedEnv)
-    console.log('cloneEnvFrom', cloneEnvFrom)
-
     if (isCleanEnvironment) {
       core.info('🌟 A clean environment will be created.')
     } else if (isAClonedEnv && cloneEnvFrom) {

@@ -33,6 +33,7 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
       console.log('content', content)
       const tempFilePath = join(dir, 'temp.mts')
       writeFileSync(tempFilePath, content)
+      console.log('tempFilePath', tempFilePath)
 
       // Execute o arquivo TypeScript usando ts-node
       const result = execSync(`npx --yes ts-node --esm ${tempFilePath}`)

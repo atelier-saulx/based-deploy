@@ -28,7 +28,7 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
       console.log('NÃO É JSON')
       const dir = process.cwd()
       const content = readFileSync(basedFile, 'utf-8')
-      const tempFilePath = join(dir, 'temp.ts')
+      const tempFilePath = join(dir, 'temp.mts')
       writeFileSync(tempFilePath, content)
 
       const result = execSync(`npx --yes ts-node ${tempFilePath}`)

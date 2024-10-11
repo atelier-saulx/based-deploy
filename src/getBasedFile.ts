@@ -26,43 +26,47 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
       console.log('É JSON')
       basedFileContent = await readJSON(basedFile)
     } else if (basedFile.endsWith('.ts')) {
-      console.log('NÃO É JSON')
-      // const dir = process.cwd()
-      let content = readFileSync(basedFile, 'utf-8')
-      // content = content.replace(/export default/, 'module.exports =')
-      // const tempFilePath = join(dir, 'temp.ts')
-      // writeFileSync(tempFilePath, content)
+      try {
+        console.log('NÃO É JSON')
+        // const dir = process.cwd()
+        let content = readFileSync(basedFile, 'utf-8')
+        // content = content.replace(/export default/, 'module.exports =')
+        // const tempFilePath = join(dir, 'temp.ts')
+        // writeFileSync(tempFilePath, content)
 
-      // const result = execSync(`npx --yes ts-node ${tempFilePath}`)
+        // const result = execSync(`npx --yes ts-node ${tempFilePath}`)
 
-      const result = ts.transpileModule(content, {
-        compilerOptions: {
-          module: ts.ModuleKind.CommonJS,
-          target: ts.ScriptTarget.ES2016,
-        },
-      })
+        const result = ts.transpileModule(content, {
+          compilerOptions: {
+            module: ts.ModuleKind.CommonJS,
+            target: ts.ScriptTarget.ES2016,
+          },
+        })
 
-      const jsCode = result.outputText
-      console.log('jsCode', jsCode)
-      const getExportedDefault = new Function('return (' + jsCode + ')')()
+        const jsCode = result.outputText
+        console.log('jsCode', jsCode)
+        const getExportedDefault = new Function('return (' + jsCode + ')')()
 
-      console.log('org', getExportedDefault.org)
-      console.log('project', getExportedDefault.project)
-      console.log('env', getExportedDefault.env)
+        console.log('org', getExportedDefault.org)
+        console.log('project', getExportedDefault.project)
+        console.log('env', getExportedDefault.env)
 
-      // execSync(`npx typescript --yes ${basedFile}`)
-      // const jsFilePath = basedFile.replace(/\.ts$/, '.js')
-      // console.log('jsFilePath', jsFilePath)
-      // const result = execSync(`node ${jsFilePath}`)
+        // execSync(`npx typescript --yes ${basedFile}`)
+        // const jsFilePath = basedFile.replace(/\.ts$/, '.js')
+        // console.log('jsFilePath', jsFilePath)
+        // const result = execSync(`node ${jsFilePath}`)
 
-      console.log('result', result)
+        console.log('result', result)
 
-      basedFileContent = JSON.parse(result.toString())
+        basedFileContent = JSON.parse(result.toString())
+      } catch (error: any) {
+        throw new Error(error)
+      }
+
+      Object.assign(basedProject, basedFileContent)
+      return basedProject
+    } else {
+      throw new Error()
     }
-
-    Object.assign(basedProject, basedFileContent)
-    return basedProject
-  } else {
-    throw new Error()
   }
 }

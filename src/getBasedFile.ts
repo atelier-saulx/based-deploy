@@ -27,7 +27,8 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
     } else if (basedFile.endsWith('.ts')) {
       console.log('NÃO É JSON')
       const dir = process.cwd()
-      const content = readFileSync(basedFile, 'utf-8')
+      let content = readFileSync(basedFile, 'utf-8')
+      content = content.replace(/export default/, 'module.exports =')
       const tempFilePath = join(dir, 'temp.ts')
       writeFileSync(tempFilePath, content)
 

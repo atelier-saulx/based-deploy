@@ -27,18 +27,11 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
     } else if (basedFile.endsWith('.ts')) {
       console.log('NÃO É JSON')
       const dir = process.cwd()
-      console.log('dir', dir)
-      console.log('basedFile', basedFile)
       const content = readFileSync(basedFile, 'utf-8')
-      console.log('content', content)
       const tempFilePath = join(dir, 'temp.ts')
       writeFileSync(tempFilePath, content)
-      console.log('tempFilePath', tempFilePath)
-      const tempFileContent = readFileSync(tempFilePath, 'utf-8')
-      console.log('tempFileContent', tempFileContent)
 
-      // Execute o arquivo TypeScript usando ts-node
-      const result = execSync(`npx --yes ts-node --esm ${tempFilePath}`)
+      const result = execSync(`npx --yes ts-node ${tempFilePath}`)
       console.log('result', result)
       console.log('Resultado da execução:', result.toString())
 

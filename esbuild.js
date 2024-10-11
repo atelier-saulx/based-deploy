@@ -8,5 +8,4 @@ build({
   sourcemap: false,
   platform: 'node',
   target: 'node18',
-  external: ['esbuild'],
 })

@@ -1,6 +1,7 @@
 import { findUp } from 'find-up'
-import { readJSON } from 'fs-extra'
-import { bundle } from '@based/bundle'
+import { readJSON, readFileSync, writeFileSync } from 'fs-extra'
+import { join } from 'path'
+import { execSync } from 'child_process'
 
 export type Project = {
   cluster?: string
@@ -23,14 +24,18 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
     if (basedFile.endsWith('.json')) {
       console.log('É JSON')
       basedFileContent = await readJSON(basedFile)
-    } else {
+    } else if (basedFile.endsWith('.ts')) {
       console.log('NÃO É JSON')
-      const bundled = await bundle({
-        entryPoints: [basedFile],
-      })
-      const compiled = bundled.require()
+      const dir = process.cwd()
+      const content = readFileSync(basedFile, 'utf-8')
+      const tempFilePath = join(dir, 'temp.ts')
+      writeFileSync(tempFilePath, content)
 
-      basedFileContent = compiled.default || compiled
+      // Execute o arquivo TypeScript usando ts-node
+      const result = execSync(`npx ts-node ${tempFilePath}`)
+      console.log('Resultado da execução:', result.toString())
+
+      basedFileContent = JSON.parse(result.toString())
     }
 
     Object.assign(basedProject, basedFileContent)

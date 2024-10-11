@@ -37,13 +37,17 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
 
       const result = ts.transpileModule(content, {
         compilerOptions: {
-          module: ts.ModuleKind.CommonJS, // Use CommonJS para a saída
-          target: ts.ScriptTarget.ES2016, // Defina o alvo como ES2016
+          module: ts.ModuleKind.CommonJS,
+          target: ts.ScriptTarget.ES2016,
         },
       })
 
-      // Execute o código JavaScript resultante
       const jsCode = result.outputText
+      const getExportedDefault = new Function('return (' + jsCode + ')')()
+
+      console.log('org', getExportedDefault.org)
+      console.log('project', getExportedDefault.project)
+      console.log('env', getExportedDefault.env)
 
       // execSync(`npx typescript --yes ${basedFile}`)
       // const jsFilePath = basedFile.replace(/\.ts$/, '.js')

@@ -5,10 +5,11 @@
   "module": "commonjs",
   "scripts": {
     "build": "node esbuild.cjs",
-    "prepare": "npm run pack",
+    "prepare": "npm run tsc",
     "demo": "node demo/demo.mjs",
     "publish": "node scripts/publish.mjs",
     "pack": "ncc build ./src/index.ts --out dist --minify",
+    "tsc": "tsc -b",
     "release:patch": "npm run prepare && npm run commit && npm version patch && npm run publish && npm run commit && npm run push",
     "release:minor": "npm run prepare && npm run commit && npm version minor && npm run publish && npm run commit && npm run push",
     "release:major": "npm run prepare && npm run commit && npm version major && npm run publish && npm run commit && npm run push",

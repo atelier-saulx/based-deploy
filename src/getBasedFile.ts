@@ -29,7 +29,7 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
       const dir = process.cwd()
       let content = readFileSync(basedFile, 'utf-8')
       content = content.replace(/export default/, 'module.exports =')
-      const tempFilePath = join(dir, 'temp.mts')
+      const tempFilePath = join(dir, 'temp.ts')
       writeFileSync(tempFilePath, content)
 
       const result = execSync(`npx --yes ts-node ${tempFilePath}`)

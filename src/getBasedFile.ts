@@ -1,5 +1,5 @@
 import { findUp } from 'find-up'
-import { readJSON, readFileSync, writeFileSync } from 'fs-extra'
+import { readJSON, readFileSync, writeFileSync, unlinkSync } from 'fs-extra'
 import { join } from 'path'
 import { execSync } from 'child_process'
 
@@ -26,15 +26,20 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
       basedFileContent = await readJSON(basedFile)
     } else if (basedFile.endsWith('.ts')) {
       console.log('NÃO É JSON')
-      const dir = process.cwd()
-      let content = readFileSync(basedFile, 'utf-8')
-      content = content.replace(/export default/, 'module.exports =')
-      const tempFilePath = join(dir, 'temp.ts')
-      writeFileSync(tempFilePath, content)
+      // const dir = process.cwd()
+      // let content = readFileSync(basedFile, 'utf-8')
+      // content = content.replace(/export default/, 'module.exports =')
+      // const tempFilePath = join(dir, 'temp.ts')
+      // writeFileSync(tempFilePath, content)
 
-      const result = execSync(`npx --yes ts-node ${tempFilePath}`)
+      // const result = execSync(`npx --yes ts-node ${tempFilePath}`)
+      execSync(`npx tsc ${basedFile}`)
+      const jsFilePath = basedFile.replace(/\.ts$/, '.js')
+      const result = execSync(`node ${jsFilePath}`)
+
       console.log('result', result)
       console.log('Resultado da execução:', result.toString())
+      unlinkSync(jsFilePath)
 
       basedFileContent = JSON.parse(result.toString())
     }

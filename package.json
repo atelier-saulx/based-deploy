@@ -1,6 +1,6 @@
 {
   "name": "based-delpoy",
-  "version": "1.2.13",
+  "version": "1.2.14",
   "main": "./action/index.js",
   "scripts": {
     "build": "node esbuild.cjs",

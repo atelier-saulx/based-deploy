@@ -43,6 +43,7 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
       })
 
       const jsCode = result.outputText
+      console.log('jsCode', jsCode)
       const getExportedDefault = new Function('return (' + jsCode + ')')()
 
       console.log('org', getExportedDefault.org)
@@ -54,7 +55,6 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
       // console.log('jsFilePath', jsFilePath)
       // const result = execSync(`node ${jsFilePath}`)
 
-      console.log('jsCode', jsCode)
       console.log('result', result)
 
       basedFileContent = JSON.parse(result.toString())

@@ -4,7 +4,7 @@
   "main": "./action/index.js",
   "scripts": {
     "build": "node esbuild.cjs",
-    "prepare": "npm run build",
+    "prepare": "npm run pack",
     "demo": "node demo/demo.mjs",
     "publish": "node scripts/publish.mjs",
     "pack": "ncc build ./src/index.ts --out dist --minify",

@@ -45,11 +45,13 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
 
         const jsCode = result.outputText
         console.log('jsCode', jsCode)
-        const getExportedDefault = new Function('return (' + jsCode + ')')()
+        const moduleExports = {}
+        const script = new Function('exports', jsCode)
+        script(moduleExports) // Passa o objeto exports para o script
 
-        console.log('org', getExportedDefault.org)
-        console.log('project', getExportedDefault.project)
-        console.log('env', getExportedDefault.env)
+        console.log('org', moduleExports.org)
+        console.log('project', moduleExports.project)
+        console.log('env', moduleExports.env)
 
         // execSync(`npx typescript --yes ${basedFile}`)
         // const jsFilePath = basedFile.replace(/\.ts$/, '.js')

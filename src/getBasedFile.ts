@@ -33,8 +33,9 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
       // writeFileSync(tempFilePath, content)
 
       // const result = execSync(`npx --yes ts-node ${tempFilePath}`)
-      execSync(`npx tsc ${basedFile}`)
+      execSync(`npx tsc --yes ${basedFile}`)
       const jsFilePath = basedFile.replace(/\.ts$/, '.js')
+      console.log('jsFilePath', jsFilePath)
       const result = execSync(`node ${jsFilePath}`)
 
       console.log('result', result)

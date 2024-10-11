@@ -76,13 +76,16 @@ async function run() {
 
     core.info('✅ Parsed "based.json".')
 
-    env = env.endsWith('#branch') ? branchName : env
-    const envInfo = env!.split('/')
+    const isBranch = env.endsWith('#branch')
+    const originalEnv = env
+    env = isBranch ? branchName : env
+    const envInfo = originalEnv!.split('/')
     const isCleanEnvironment = envInfo.length === 1 && envInfo[0] === '#branch'
     const isAClonedEnv = envInfo.length === 2 && envInfo[1] === '#branch'
     const cloneEnvFrom = envInfo.length === 2 ? envInfo[0] : ''
 
     console.log('env', env)
+    console.log('originalEnv', originalEnv)
     console.log('envInfo', envInfo)
     console.log('isCleanEnvironment', isCleanEnvironment)
     console.log('isAClonedEnv', isAClonedEnv)

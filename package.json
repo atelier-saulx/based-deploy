@@ -2,6 +2,7 @@
   "name": "based-delpoy",
   "version": "1.2.15",
   "main": "./action/index.js",
+  "module": "commonjs",
   "scripts": {
     "build": "node esbuild.cjs",
     "prepare": "npm run pack",

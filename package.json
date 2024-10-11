@@ -1,6 +1,6 @@
 {
   "name": "based-delpoy",
-  "version": "1.2.38",
+  "version": "1.2.39",
   "main": "./action/index.js",
   "module": "commonjs",
   "scripts": {

@@ -25,11 +25,9 @@ export const getBasedFile = async (
 
   if (basedFile) {
     if (basedFile.endsWith('.json')) {
-      console.log('É JSON')
       basedFileContent = await readJSON(basedFile)
     } else if (basedFile.endsWith('.ts')) {
       try {
-        console.log('NÃO É JSON')
         let content = readFileSync(basedFile, 'utf-8')
         const result = ts.transpileModule(content, {
           compilerOptions: {

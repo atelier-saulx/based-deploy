@@ -59,7 +59,7 @@ async function run() {
     try {
       basedJson = await getBasedFile(['based.json', 'based.js', 'based.ts'])
 
-      core.info('✅ Loaded "based.json".')
+      core.info('✅ Loaded the based configuration file.')
     } catch (error) {
       throw new Error(
         'Was not possible to find the based configuration file in the branch. Add the file and try again.',

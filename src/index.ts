@@ -77,7 +77,7 @@ async function run() {
     core.info('✅ Parsed "based.json".')
 
     env = env.endsWith('#branch') ? branchName : env
-    const envInfo = env.split('/')
+    const envInfo = env!.split('/')
     const isCleanEnvironment = envInfo.length === 1 && envInfo[0] === '#branch'
     const isAClonedEnv = envInfo.length === 2 && envInfo[1] === '#branch'
     const cloneEnvFrom = envInfo.length === 2 ? envInfo[0] : ''
@@ -105,13 +105,13 @@ async function run() {
       })
 
       core.info('✅ Based AuthState set.')
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         `Was not possible to log in using your credentials. Error: ${error.message}.`,
       )
     }
 
-    const isEnvFound = await getEnvByName(client, org, project, env)
+    const isEnvFound = await getEnvByName(client, org, project, env as string)
 
     if (!isToCreateEnv) {
       if (!isEnvFound) {
@@ -132,7 +132,7 @@ async function run() {
         core.info(`✅ Environment '${env}' deleted successfully.`)
 
         process.exit()
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Error deleting the environment: ${error.message}.`)
       }
     }
@@ -153,7 +153,7 @@ async function run() {
         await wait(60e3)
 
         core.info('✅ Environment created successfully.')
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Error creating the environment: ${error.message}.`)
       }
     }
@@ -182,7 +182,7 @@ async function run() {
         await wait(60e3)
 
         core.info('✅ Environment created successfully.')
-      } catch (error) {
+      } catch (error: any) {
         throw new Error(`Error creating the environment: ${error.message}.`)
       }
     }
@@ -190,7 +190,7 @@ async function run() {
     await deploy(token)
 
     process.exit()
-  } catch (error) {
+  } catch (error: any) {
     core.setFailed(`🧨 Error: ${error.message}.`)
 
     process.exit()

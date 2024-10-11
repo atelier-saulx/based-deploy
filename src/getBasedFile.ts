@@ -1,5 +1,5 @@
 import { findUp } from 'find-up'
-import { readJSON } from 'fs-extra/esm'
+import { readJSON } from 'fs-extra'
 import { bundle } from '@based/bundle'
 
 export type Project = {
@@ -10,7 +10,7 @@ export type Project = {
   apiKey?: string
 }
 
-export const getBasedFile = async (file: string[]): Promise<Project | null> => {
+export const getBasedFile = async (file: string[]): Promise<Project> => {
   if (!file || !file.length) {
     throw new Error()
   }

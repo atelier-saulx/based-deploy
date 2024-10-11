@@ -6,8 +6,8 @@
   "scripts": {
     "build": "node esbuild.js",
     "prepare": "npm run build",
-    "demo": "node demo/demo.js",
-    "publish": "node scripts/publish.js",
+    "demo": "node demo/demo.mjs",
+    "publish": "node scripts/publish.mjs",
     "pack": "ncc build ./src/index.ts --out dist --minify",
     "tsc": "tsc -b",
     "release:patch": "npm run prepare && npm run commit && npm version patch && npm run publish && npm run commit && npm run push",

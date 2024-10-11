@@ -20,8 +20,8 @@ outputs:
   response:
     description: 'The response from the Based.io API'
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: 'node18'
+  main: 'dist/index.cjs'
 branding:
   icon: 'upload-cloud'
   color: 'purple'

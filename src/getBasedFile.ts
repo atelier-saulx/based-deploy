@@ -2,6 +2,7 @@ import { findUp } from 'find-up'
 import { readJSON, readFileSync, writeFileSync, unlinkSync } from 'fs-extra'
 import { join } from 'path'
 import { execSync } from 'child_process'
+import ts from 'typescript'
 
 export type Project = {
   cluster?: string
@@ -27,20 +28,30 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
     } else if (basedFile.endsWith('.ts')) {
       console.log('NÃO É JSON')
       // const dir = process.cwd()
-      // let content = readFileSync(basedFile, 'utf-8')
+      let content = readFileSync(basedFile, 'utf-8')
       // content = content.replace(/export default/, 'module.exports =')
       // const tempFilePath = join(dir, 'temp.ts')
       // writeFileSync(tempFilePath, content)
 
       // const result = execSync(`npx --yes ts-node ${tempFilePath}`)
-      execSync(`npx typescript --yes ${basedFile}`)
-      const jsFilePath = basedFile.replace(/\.ts$/, '.js')
-      console.log('jsFilePath', jsFilePath)
-      const result = execSync(`node ${jsFilePath}`)
 
+      const result = ts.transpileModule(content, {
+        compilerOptions: {
+          module: ts.ModuleKind.CommonJS, // Use CommonJS para a saída
+          target: ts.ScriptTarget.ES2016, // Defina o alvo como ES2016
+        },
+      })
+
+      // Execute o código JavaScript resultante
+      const jsCode = result.outputText
+
+      // execSync(`npx typescript --yes ${basedFile}`)
+      // const jsFilePath = basedFile.replace(/\.ts$/, '.js')
+      // console.log('jsFilePath', jsFilePath)
+      // const result = execSync(`node ${jsFilePath}`)
+
+      console.log('jsCode', jsCode)
       console.log('result', result)
-      console.log('Resultado da execução:', result.toString())
-      unlinkSync(jsFilePath)
 
       basedFileContent = JSON.parse(result.toString())
     }

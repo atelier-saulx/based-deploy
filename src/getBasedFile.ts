@@ -47,8 +47,8 @@ export const getBasedFile = async (file: string[]): Promise<Project> => {
         console.log('jsCode', jsCode)
         const moduleExports = {}
         const script = new Function('exports', jsCode)
-        script(moduleExports) // Passa o objeto exports para o script
-
+        const returned = script(moduleExports) // Passa o objeto exports para o script
+        console.log('returned', returned)
         console.log('org', moduleExports.org)
         console.log('project', moduleExports.project)
         console.log('env', moduleExports.env)

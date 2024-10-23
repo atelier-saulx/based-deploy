@@ -77,6 +77,8 @@ export const getBasedFile = async (
           module.exports = usedExport;
         `
 
+        console.log('modifiedCode', modifiedCode)
+
         const script = new Function('module', modifiedCode)
         const module = { exports: {} }
 

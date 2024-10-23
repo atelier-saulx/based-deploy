@@ -39,17 +39,18 @@ export type BasedFile = {
 }
 
 export const getBasedFile = async (
-  file: string[],
+  files: string[],
   exports: string = 'default',
 ): Promise<BasedFile | undefined> => {
-  if (!file || !file.length) {
+  if (!files || !files.length) {
     throw new Error('No files specified.')
   }
 
-  const basedFile = await findUp(file)
+  const basedFile = await findUp(files)
   let basedFileContent: Project | Infra = {}
   const basedInfo: Project | Infra = {}
 
+  console.log('basedFile', basedFile)
   if (basedFile) {
     if (basedFile.endsWith('.json')) {
       console.log('é json')

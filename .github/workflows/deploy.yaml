@@ -2,7 +2,7 @@ name: Deploy Branch in Based.io
 on:
   push:
     branches:
-      - '**'
+      - "**"
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -18,7 +18,7 @@ jobs:
       - name: Build the action
         run: npm run build
       - name: Run the action
-        uses: atelier-saulx/based-deploy@v1.3.0
+        uses: atelier-saulx/based-deploy@v1.3.1
         with:
           userID: ${{ secrets.BASED_USER_ID }}
           apiKey: ${{ secrets.BASED_API_KEY }}

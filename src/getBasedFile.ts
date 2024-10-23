@@ -47,20 +47,17 @@ export const getBasedFile = async (
   }
 
   const basedFile = await findUp(files)
-  let basedFileContent: Project | Infra = {}
-  const basedInfo: Project | Infra = {}
 
   if (basedFile) {
     if (basedFile.endsWith('.json')) {
-      basedFileContent = await readJSON(basedFile)
-
       return {
-        content: basedFileContent,
+        content: await readJSON(basedFile),
         exports: 'default',
       }
     } else if (basedFile.endsWith('.ts')) {
       try {
         let content = readFileSync(basedFile, 'utf-8')
+
         const result = ts.transpileModule(content, {
           compilerOptions: {
             module: ts.ModuleKind.CommonJS,
@@ -71,32 +68,23 @@ export const getBasedFile = async (
         const jsCode = result.outputText
         const modifiedCode = `
           const exports = {};
-          let usedExport;
           ${jsCode}
-          usedExport = '${exports}' in exports ? exports['${exports}'] : exports.default;
-          module.exports = usedExport;
+          module.used = '${exports}' in exports ? '${exports}' : 'default';
+          module.exports = '${exports}' in exports ? exports['${exports}'] : exports.default;
         `
 
         console.log('modifiedCode', modifiedCode)
 
         const script = new Function('module', modifiedCode)
-        const module = { exports: {} }
+        const module = { exports: {}, used: '' }
 
         script(module)
 
-        basedFileContent = module.exports
-
-        const finalExport =
-          module.exports && 'default' in module.exports ? 'default' : exports
-
         console.log('module', module)
-        console.log('finalExport', finalExport)
-
-        Object.assign(basedInfo, basedFileContent)
 
         return {
-          content: basedInfo,
-          exports: finalExport,
+          content: module.exports,
+          exports: module.used,
         }
       } catch (error: any) {
         throw new Error(error)

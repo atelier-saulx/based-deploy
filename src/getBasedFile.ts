@@ -1,7 +1,5 @@
 import { findUp } from 'find-up'
-import { readJSON, readFileSync, writeFileSync, unlinkSync } from 'fs-extra'
-import { join } from 'path'
-import { execSync } from 'child_process'
+import { readJSON, readFileSync } from 'fs-extra'
 import ts from 'typescript'
 
 export type Project = {
@@ -12,20 +10,54 @@ export type Project = {
   apiKey?: string
 }
 
+export type Infra = {
+  [key: string]: {
+    description: string
+    machine: string
+    max: number
+    min: number
+    services: {
+      [key: string]: {
+        distChecksum: string
+        instances: {
+          [key: string]: {
+            port: number
+            name: string
+            disableRest: boolean
+            disableAllSecurity: boolean
+            disableWs: boolean
+          }
+        }
+      }
+    }
+  }
+}
+
+export type BasedFile = {
+  content: Project | Infra | undefined
+  exports: string
+}
+
 export const getBasedFile = async (
   file: string[],
-): Promise<Project | undefined> => {
+  exports: string = 'default',
+): Promise<BasedFile | undefined> => {
   if (!file || !file.length) {
-    throw new Error()
+    throw new Error('No files specified.')
   }
 
   const basedFile = await findUp(file)
-  let basedFileContent: Project = {}
-  const basedProject: Project = {}
+  let basedFileContent: Project | Infra = {}
+  const basedInfo: Project | Infra = {}
 
   if (basedFile) {
     if (basedFile.endsWith('.json')) {
       basedFileContent = await readJSON(basedFile)
+
+      return {
+        content: basedFileContent,
+        exports: 'default',
+      }
     } else if (basedFile.endsWith('.ts')) {
       try {
         let content = readFileSync(basedFile, 'utf-8')
@@ -39,23 +71,35 @@ export const getBasedFile = async (
         const jsCode = result.outputText
         const modifiedCode = `
           const exports = {};
+          let usedExport;
           ${jsCode}
-          module.exports = exports.default;
+          usedExport = exports.${exports} || exports.default;
+          module.exports = usedExport;
         `
 
         const script = new Function('module', modifiedCode)
         const module = { exports: {} }
+
         script(module)
+
         basedFileContent = module.exports
+
+        const finalExport =
+          module.exports && 'default' in module.exports ? 'default' : exports
+
+        Object.assign(basedInfo, basedFileContent)
+
+        return {
+          content: basedInfo,
+          exports: finalExport,
+        }
       } catch (error: any) {
         throw new Error(error)
       }
-
-      Object.assign(basedProject, basedFileContent)
-
-      return basedProject
     } else {
-      throw new Error()
+      throw new Error('Unsupported file type.')
     }
   }
+
+  return undefined
 }

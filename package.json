@@ -6,7 +6,7 @@
   "scripts": {
     "esbluid": "node esbuild.js",
     "build": "npm run esbluid",
-    "demo": "node demo/demo.mjs",
+    "demo": "ts-node --esm demo/demo.ts",
     "publish": "node scripts/publish.mjs",
     "release:patch": "npm run build && npm run commit && npm version patch && npm run publish && npm run commit && npm run push",
     "release:minor": "npm run build && npm run commit && npm version minor && npm run publish && npm run commit && npm run push",

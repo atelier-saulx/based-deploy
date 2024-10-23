@@ -3,7 +3,7 @@ import * as exec from '@actions/exec'
 import * as github from '@actions/github'
 import { BasedClient } from '@based/client'
 import { wait } from '@saulx/utils'
-import { getBasedFile, Project } from './getBasedFile'
+import { getBasedFile, BasedFile, Project } from './getBasedFile'
 
 const getEnvByName = async (
   client: BasedClient,
@@ -42,7 +42,7 @@ async function run() {
     const region = core.getInput('region') || 'eu-central-1'
     const action = core.getInput('action') || 'create-env'
     let isToCreateEnv = action === 'create-env'
-    const branchName = isToCreateEnv
+    const branchName: string = isToCreateEnv
       ? github.context?.ref?.replace('refs/heads/', '')
       : github.context?.payload?.ref
 
@@ -54,19 +54,32 @@ async function run() {
 
     core.info('✅ UserID and APIKey')
 
-    let basedJson: Project | undefined = {}
+    let basedProject: BasedFile | undefined
+    let basedInfra: BasedFile | undefined
 
     try {
-      basedJson = await getBasedFile(['based.json', 'based.js', 'based.ts'])
+      basedProject = await getBasedFile(
+        [
+          'based.json',
+          'based.project.json',
+          'based.js',
+          'based.project.js',
+          'based.ts',
+          'based.project.ts',
+        ],
+        branchName,
+      )
 
-      core.info('✅ Loaded the based configuration file.')
+      core.info(
+        `✅ Loaded the based configuration file. Using the '${basedProject?.exports}' export.`,
+      )
     } catch (error) {
       throw new Error(
         'Was not possible to find the based configuration file in the branch. Add the file and try again.',
       )
     }
 
-    let { org, project, env } = basedJson!
+    let { org, project, env } = basedProject?.content! as Project
 
     if (!org || !project || !env) {
       throw new Error(
@@ -74,20 +87,30 @@ async function run() {
       )
     }
 
-    core.info('✅ Parsed "based.json".')
+    core.info('✅ Parsed the based configuration file.')
 
-    const isBranch = env.endsWith('#branch')
     const originalEnv = env
-    env = isBranch ? branchName : env
+    const isBranch = env.endsWith('#branch')
+    env = isBranch ? branchName : originalEnv
+
     const envInfo = originalEnv!.split('/')
     const isCleanEnvironment = envInfo.length === 1 && envInfo[0] === '#branch'
     const isAClonedEnv = envInfo.length === 2 && envInfo[1] === '#branch'
-    const cloneEnvFrom = envInfo.length === 2 ? envInfo[0] : ''
+    const useDataFrom = envInfo.length === 2 ? envInfo[0] : ''
 
-    if (isCleanEnvironment) {
-      core.info('🌟 A clean environment will be created.')
-    } else if (isAClonedEnv && cloneEnvFrom) {
-      core.info(`👯‍♀️ The env ${cloneEnvFrom} will be cloned.`)
+    try {
+      basedInfra = await getBasedFile(
+        ['based.infra.json', 'based.infra.js', 'based.infra.ts'],
+        env,
+      )
+
+      core.info(
+        `✅ Loaded the based infra file. Using the '${basedInfra?.exports}' export.`,
+      )
+    } catch (error) {
+      core.info(
+        `Was not possible to find the based infra file in the branch. Using the 'default' configuration.`,
+      )
     }
 
     const client = new BasedClient({
@@ -109,11 +132,11 @@ async function run() {
       core.info('✅ Based AuthState set.')
     } catch (error: any) {
       throw new Error(
-        `Was not possible to log in using your credentials. Error: ${error.message}.`,
+        `Was not possible to log in using your credentials. Error: '${error.message}'.`,
       )
     }
 
-    const isEnvFound = await getEnvByName(client, org, project, env as string)
+    const isEnvFound = await getEnvByName(client, org, project, env)
 
     if (!isToCreateEnv) {
       if (!isEnvFound) {
@@ -135,57 +158,85 @@ async function run() {
 
         process.exit()
       } catch (error: any) {
-        throw new Error(`Error deleting the environment: ${error.message}.`)
+        throw new Error(`Error deleting the environment: '${error.message}'.`)
       }
     }
 
     if (isToCreateEnv && !isEnvFound && isCleanEnvironment) {
       try {
-        core.info(`🕘 Trying to create a new environment named ${env}.`)
-        core.info('✅ Waiting for the creation of the environment...')
+        core.info('🌟 A clean environment will be created.')
+        core.info(
+          `🕘 Waiting for the creation of the environment named '${env}'...`,
+        )
 
-        await client.call('create-env', {
-          org,
-          project,
-          env: branchName,
-          config: size,
-          region,
-        })
+        if (basedInfra?.content) {
+          await client.call('create-env', {
+            org,
+            project,
+            env: branchName,
+            region,
+            envConfig: basedInfra?.content,
+          })
+        } else {
+          await client.call('create-env', {
+            org,
+            project,
+            env: branchName,
+            region,
+            config: size,
+          })
+        }
 
         await wait(60e3)
 
         core.info('✅ Environment created successfully.')
       } catch (error: any) {
-        throw new Error(`Error creating the environment: ${error.message}.`)
+        throw new Error(`Error creating the environment: '${error.message}'.`)
       }
     }
 
     if (isToCreateEnv && !isEnvFound && isAClonedEnv) {
       try {
         core.info(
-          `🕘 Trying to clone the env ${cloneEnvFrom} as new environment named ${env}.`,
+          `🕘 Cloning the data from the env '${useDataFrom}' to be used in the new environment named '${env}'.`,
         )
-        core.info('✅ Waiting for the creation of the environment...')
+        core.info('🕘 Waiting for the creation of the environment...')
 
-        await client.call('clone-env', {
-          source: {
-            org,
-            project,
-            env: cloneEnvFrom,
-          },
-          dest: {
-            org,
-            project,
-            env,
-          },
-          keepConfig: false,
-        })
+        if (basedInfra?.content) {
+          await client.call('clone-env', {
+            source: {
+              org,
+              project,
+              env: useDataFrom,
+            },
+            dest: {
+              org,
+              project,
+              env,
+            },
+            config: basedInfra?.content,
+          })
+        } else {
+          await client.call('clone-env', {
+            source: {
+              org,
+              project,
+              env: useDataFrom,
+            },
+            dest: {
+              org,
+              project,
+              env,
+            },
+            keepConfig: false,
+          })
+        }
 
         await wait(60e3)
 
         core.info('✅ Environment created successfully.')
       } catch (error: any) {
-        throw new Error(`Error creating the environment: ${error.message}.`)
+        throw new Error(`Error creating the environment: '${error.message}'.`)
       }
     }
 
@@ -193,7 +244,7 @@ async function run() {
 
     process.exit()
   } catch (error: any) {
-    core.setFailed(`🧨 Error: ${error.message}.`)
+    core.setFailed(`🧨 Error: '${error.message}'.`)
 
     process.exit()
   }

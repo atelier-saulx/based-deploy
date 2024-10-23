@@ -73,14 +73,10 @@ export const getBasedFile = async (
           module.exports = '${exports}' in exports ? exports['${exports}'] : exports.default;
         `
 
-        console.log('modifiedCode', modifiedCode)
-
         const script = new Function('module', modifiedCode)
         const module = { exports: {}, used: '' }
 
         script(module)
-
-        console.log('module', module)
 
         return {
           content: module.exports,
@@ -94,5 +90,5 @@ export const getBasedFile = async (
     }
   }
 
-  return undefined
+  throw new Error('File not found.')
 }

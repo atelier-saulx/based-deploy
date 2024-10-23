@@ -87,8 +87,6 @@ async function run() {
       )
     }
 
-    core.info('✅ Parsed the based configuration file.')
-
     const originalEnv = env
     const isBranch = env.endsWith('#branch')
     env = isBranch ? branchName : originalEnv

@@ -73,7 +73,7 @@ export const getBasedFile = async (
           const exports = {};
           let usedExport;
           ${jsCode}
-          usedExport = exports['${exports}'] ? exports['${exports}'] : exports.default;
+          usedExport = '${exports}' in exports ? exports['${exports}'] : exports.default;
           module.exports = usedExport;
         `
 
@@ -88,6 +88,9 @@ export const getBasedFile = async (
 
         const finalExport =
           module.exports && 'default' in module.exports ? 'default' : exports
+
+        console.log('module', module)
+        console.log('finalExport', finalExport)
 
         Object.assign(basedInfo, basedFileContent)
 

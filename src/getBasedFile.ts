@@ -36,6 +36,7 @@ export type Infra = {
 export type BasedFile = {
   content: Project | Infra | undefined
   exports: string
+  file: string
 }
 
 export const getBasedFile = async (
@@ -53,6 +54,7 @@ export const getBasedFile = async (
       return {
         content: await readJSON(basedFile),
         exports: 'default',
+        file: basedFile.split('/').at(-1)!,
       }
     } else if (basedFile.endsWith('.ts')) {
       try {
@@ -81,6 +83,7 @@ export const getBasedFile = async (
         return {
           content: module.exports,
           exports: module.used,
+          file: basedFile.split('/').at(-1)!,
         }
       } catch (error: any) {
         throw new Error(error)

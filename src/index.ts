@@ -71,7 +71,7 @@ async function run() {
       )
 
       core.info(
-        `✅ Loaded the based configuration file. Using the '${basedProject?.exports}' export.`,
+        `✅ Loaded the based configuration file '${basedProject?.file}'. Using the '${basedProject?.exports}' export.`,
       )
     } catch (error) {
       throw new Error(
@@ -103,11 +103,11 @@ async function run() {
       )
 
       core.info(
-        `✅ Loaded the based infra file. Using the '${basedInfra?.exports}' export.`,
+        `✅ Loaded the based infra file '${basedInfra?.file}'. Using the '${basedInfra?.exports}' export.`,
       )
     } catch (error) {
       core.info(
-        `Was not possible to find the based infra file in the branch. Using the 'default' configuration.`,
+        `🫤 Was not possible to find the based infra file in the branch. Using the 'default' configuration.`,
       )
     }
 

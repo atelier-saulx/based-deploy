@@ -73,7 +73,7 @@ export const getBasedFile = async (
           const exports = {};
           let usedExport;
           ${jsCode}
-          usedExport = exports.${exports} ? exports.${exports} : exports.default;
+          usedExport = exports['${exports}'] ? exports['${exports}'] : exports.default;
           module.exports = usedExport;
         `
 

@@ -50,10 +50,8 @@ export const getBasedFile = async (
   let basedFileContent: Project | Infra = {}
   const basedInfo: Project | Infra = {}
 
-  console.log('basedFile', basedFile)
   if (basedFile) {
     if (basedFile.endsWith('.json')) {
-      console.log('é json')
       basedFileContent = await readJSON(basedFile)
 
       return {
@@ -61,7 +59,6 @@ export const getBasedFile = async (
         exports: 'default',
       }
     } else if (basedFile.endsWith('.ts')) {
-      console.log('é ts')
       try {
         let content = readFileSync(basedFile, 'utf-8')
         const result = ts.transpileModule(content, {
@@ -76,7 +73,7 @@ export const getBasedFile = async (
           const exports = {};
           let usedExport;
           ${jsCode}
-          usedExport = exports.${exports} || exports.default;
+          usedExport = exports.${exports} ? exports.${exports} : exports.default;
           module.exports = usedExport;
         `
 

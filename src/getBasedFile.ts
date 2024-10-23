@@ -11,21 +11,25 @@ export type Project = {
 }
 
 export type Infra = {
-  [key: string]: {
-    description: string
-    machine: string
-    max: number
-    min: number
-    services: {
-      [key: string]: {
-        distChecksum: string
-        instances: {
-          [key: string]: {
-            port: number
-            name: string
-            disableRest: boolean
-            disableAllSecurity: boolean
-            disableWs: boolean
+  autoStandby: boolean
+  suspended: boolean
+  machineConfigs: {
+    [key: string]: {
+      description: string
+      machine: string
+      max: number
+      min: number
+      services: {
+        [key: string]: {
+          distChecksum: string
+          instances: {
+            [key: string]: {
+              port: number
+              name: string
+              disableRest: boolean
+              disableAllSecurity: boolean
+              disableWs: boolean
+            }
           }
         }
       }

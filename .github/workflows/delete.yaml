@@ -2,7 +2,7 @@ name: Delete Branch in Based.io
 on:
   delete:
     branches:
-      - "*"
+      - '**'
 jobs:
   delete:
     runs-on: ubuntu-latest

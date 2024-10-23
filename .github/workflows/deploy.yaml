@@ -2,7 +2,7 @@ name: Deploy Branch in Based.io
 on:
   push:
     branches:
-      - "*"
+      - '**'
 jobs:
   deploy:
     runs-on: ubuntu-latest

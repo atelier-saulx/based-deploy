@@ -75,7 +75,7 @@ async function run() {
       )
     } catch (error) {
       throw new Error(
-        'Was not possible to find the based configuration file in the branch. Add the file and try again.',
+        `Was not possible to find the based configuration file in the branch. Add the file and try again. Error: '${error}'.`,
       )
     }
 

@@ -136,7 +136,7 @@ async function run() {
 
     const isEnvFound = await getEnvByName(client, org, project, env)
 
-    if (!isToCreateEnv) {
+    if (!isToCreateEnv && isBranch) {
       if (!isEnvFound) {
         throw new Error(
           "Is not possible to delete an environment that doesn't exist.",

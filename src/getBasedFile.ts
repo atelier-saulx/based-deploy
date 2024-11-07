@@ -1,5 +1,5 @@
 import { findUp } from 'find-up'
-import { readJSON, readFileSync } from 'fs-extra'
+import { readFileSync, readJSON } from 'fs-extra'
 import ts from 'typescript'
 
 export type Project = {
@@ -46,7 +46,7 @@ export type BasedFile = {
 export const getBasedFile = async (
   files: string[],
   exports: string = 'default',
-): Promise<BasedFile | undefined> => {
+): Promise<BasedFile> => {
   if (!files || !files.length) {
     throw new Error('No files specified.')
   }
@@ -58,11 +58,13 @@ export const getBasedFile = async (
       return {
         content: await readJSON(basedFile),
         exports: 'default',
-        file: basedFile.split('/').at(-1)!,
+        file: basedFile.split('/').at(-1) ?? '',
       }
-    } else if (basedFile.endsWith('.ts')) {
+    }
+
+    if (basedFile.endsWith('.ts')) {
       try {
-        let content = readFileSync(basedFile, 'utf-8')
+        const content = readFileSync(basedFile, 'utf-8')
 
         const result = ts.transpileModule(content, {
           compilerOptions: {
@@ -87,10 +89,10 @@ export const getBasedFile = async (
         return {
           content: module.exports,
           exports: module.used,
-          file: basedFile.split('/').at(-1)!,
+          file: basedFile.split('/').at(-1) ?? '',
         }
-      } catch (error: any) {
-        throw new Error(error)
+      } catch (error: unknown) {
+        throw new Error(error as string)
       }
     } else {
       throw new Error('Unsupported file type.')

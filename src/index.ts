@@ -3,7 +3,7 @@ import * as exec from '@actions/exec'
 import * as github from '@actions/github'
 import { BasedClient } from '@based/client'
 import { wait } from '@saulx/utils'
-import { getBasedFile, BasedFile, Project } from './getBasedFile'
+import { type BasedFile, type Project, getBasedFile } from './getBasedFile'
 
 const getEnvByName = async (
   client: BasedClient,
@@ -19,8 +19,8 @@ const getEnvByName = async (
     core.info(`✅ Environment '${env}' found! Working on it.`)
 
     return true
-  } catch (_) {
-    core.info(`⚠️ Environment '${env}' not found!`)
+  } catch {
+    core.info(`🫤 Environment '${env}' not found!`)
 
     return false
   }
@@ -41,7 +41,7 @@ async function run() {
     const size = core.getInput('size') || 'small'
     const region = core.getInput('region') || 'eu-central-1'
     const action = core.getInput('action') || 'create-env'
-    let isToCreateEnv = action === 'create-env'
+    const isToCreateEnv = action === 'create-env'
     const branchName: string = isToCreateEnv
       ? github.context?.ref?.replace('refs/heads/', '')
       : github.context?.payload?.ref
@@ -54,7 +54,7 @@ async function run() {
 
     core.info('✅ UserID and APIKey')
 
-    let basedProject: BasedFile | undefined
+    let basedProject: BasedFile
     let basedInfra: BasedFile | undefined
 
     try {
@@ -79,7 +79,7 @@ async function run() {
       )
     }
 
-    let { org, project, env } = basedProject?.content! as Project
+    let { org, project, env } = basedProject.content as Project
 
     if (!org || !project || !env) {
       throw new Error(
@@ -91,7 +91,7 @@ async function run() {
     const isBranch = env.endsWith('#branch')
     env = isBranch ? branchName : originalEnv
 
-    const envInfo = originalEnv!.split('/')
+    const envInfo = originalEnv.split('/')
     const isCleanEnvironment = envInfo.length === 1 && envInfo[0] === '#branch'
     const isAClonedEnv = envInfo.length === 2 && envInfo[1] === '#branch'
     const useDataFrom = envInfo.length === 2 ? envInfo[0] : ''
@@ -105,7 +105,7 @@ async function run() {
       core.info(
         `✅ Loaded the based infra file '${basedInfra?.file}'. Using the '${basedInfra?.exports}' export.`,
       )
-    } catch (error) {
+    } catch {
       core.info(
         `🫤 Was not possible to find the based infra file in the branch. Using the 'default' configuration.`,
       )
@@ -128,15 +128,20 @@ async function run() {
       })
 
       core.info('✅ Based AuthState set.')
-    } catch (error: any) {
+    } catch (error: unknown) {
       throw new Error(
-        `Was not possible to log in using your credentials. Error: '${error.message}'.`,
+        `Was not possible to log in using your credentials. Error: '${(error as Error).message}'.`,
       )
     }
 
-    const isEnvFound = await getEnvByName(client, org, project, env)
+    const isEnvFound = await getEnvByName(
+      client,
+      org,
+      project,
+      env ?? branchName,
+    )
 
-    if (!isToCreateEnv && isBranch) {
+    if (!isToCreateEnv) {
       if (!isEnvFound) {
         throw new Error(
           "Is not possible to delete an environment that doesn't exist.",
@@ -149,14 +154,16 @@ async function run() {
         await client.call('remove-env', {
           org,
           project,
-          env,
+          branchName,
         })
 
-        core.info(`✅ Environment '${env}' deleted successfully.`)
+        core.info(`✅ Environment '${branchName}' deleted successfully.`)
 
         process.exit()
-      } catch (error: any) {
-        throw new Error(`Error deleting the environment: '${error.message}'.`)
+      } catch (error: unknown) {
+        throw new Error(
+          `Error deleting the environment: '${(error as Error).message}'.`,
+        )
       }
     }
 
@@ -188,8 +195,12 @@ async function run() {
         await wait(60e3)
 
         core.info('✅ Environment created successfully.')
-      } catch (error: any) {
-        throw new Error(`Error creating the environment: '${error.message}'.`)
+
+        await deploy(token)
+      } catch (error: unknown) {
+        throw new Error(
+          `Error creating the environment: '${(error as Error).message}'.`,
+        )
       }
     }
 
@@ -233,16 +244,18 @@ async function run() {
         await wait(60e3)
 
         core.info('✅ Environment created successfully.')
-      } catch (error: any) {
-        throw new Error(`Error creating the environment: '${error.message}'.`)
+
+        await deploy(token)
+      } catch (error: unknown) {
+        throw new Error(
+          `Error creating the environment: '${(error as Error).message}'.`,
+        )
       }
     }
 
-    await deploy(token)
-
     process.exit()
-  } catch (error: any) {
-    core.setFailed(`🧨 Error: '${error.message}'.`)
+  } catch (error: unknown) {
+    core.setFailed(`🧨 Error: '${(error as Error).message}'.`)
 
     process.exit()
   }

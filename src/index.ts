@@ -138,7 +138,7 @@ async function run() {
       client,
       org,
       project,
-      env ?? branchName,
+      isToCreateEnv ? env : branchName,
     )
 
     if (!isToCreateEnv) {
